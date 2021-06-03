@@ -2,13 +2,19 @@ package app.gitforge.libraries.liquibase.migration.yml
 
 import app.gitforge.libraries.liquibase.migration.schema.Column as SchemaColumn
 
-data class ColumnConstraint(val primaryKey: Boolean?, val primaryKeyName: String?, val nullable: Boolean?, val unique: Boolean?)
+data class ColumnConstraint(val primaryKey: Boolean = false, val primaryKeyName: String?, val nullable: Boolean?, val unique: Boolean = false)
 data class Column(val name: String, val type: String, val autoIncrement: Boolean?, val constraints: ColumnConstraint)
 data class ChangeColumn(val column: Column) {
     companion object {
         fun fromSchema(column: SchemaColumn) : ChangeColumn {
 
-            val constraint = ColumnConstraint(false, null, column.nullable, false)
+            var columnConstraint = column.constraints
+            val constraint = ColumnConstraint(
+                columnConstraint.isPrimaryKey,
+                null,
+                columnConstraint.nullable,
+                false
+            )
 
             return ChangeColumn(Column(
                 column.name,

@@ -1,6 +1,7 @@
 package app.gitforge.libraries.liquibase.migration.yml
 
 import app.gitforge.libraries.liquibase.migration.schema.Column
+import app.gitforge.libraries.liquibase.migration.schema.ColumnConstraint
 import app.gitforge.libraries.liquibase.migration.schema.ColumnDataType
 import app.gitforge.libraries.liquibase.migration.schema.Schema
 import app.gitforge.libraries.liquibase.migration.schema.Table
@@ -29,7 +30,7 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
             val column = Column(
                 columnData.name,
                 ColumnDataType.getTypeByMigrationString(columnData.type),
-                columnData.constraints.nullable ?: true
+                ColumnConstraint.fromYaml(columnData.constraints)
             )
 
             columns.add(column)

@@ -27,7 +27,6 @@ object MigrationGenerator {
     }
 
     fun generateNewMigration(oldStatePath: String, newStatePath: String): ChangeLogEntryPoint = runBlocking {
-        val parser = KotlinEntityParser()
         val oldSchemas = ArrayList<Schema>()
 
         val oldSchemaRun = launch {
@@ -49,7 +48,7 @@ object MigrationGenerator {
             File(newStatePath).walk().forEach {
                 if (it.isFile) {
                     launch {
-                        val table = parser.getTableFromEntityClass(it.absolutePath)
+                        val table = KotlinEntityParser.getTableFromEntityClass(it.absolutePath)
                         if (table != null) {
                             tables.add(table)
                         }
