@@ -5,10 +5,7 @@ import javax.persistence.*
 
 @Entity
 @Builder
-class Bank(
-    @Column(length = 60, nullable = false, unique = true)
-    var name: String
-) {
+class Bank() {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null

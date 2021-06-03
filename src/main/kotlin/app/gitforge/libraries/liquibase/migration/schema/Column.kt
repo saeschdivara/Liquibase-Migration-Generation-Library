@@ -46,7 +46,7 @@ data class ColumnConstraint(
     val nullable: Boolean,
     var isPrimaryKey: Boolean = false,
     var isUnique: Boolean = false,
-    var lenght: Int? = 0,
+    var lenght: Int = 0,
 ) {
     companion object {
         fun fromYaml(constraint: YamlColumnConstraint) : ColumnConstraint {
@@ -59,4 +59,27 @@ data class ColumnConstraint(
     }
 }
 
-data class Column(val name: String, val dataType: ColumnDataType, val constraints: ColumnConstraint)
+data class Column(val name: String, val dataType: ColumnDataType, val constraints: ColumnConstraint) {
+    fun getColumnDataType() : String {
+        val baseType = getColumnDataTypeStr()
+
+        return if (constraints.lenght > 0) {
+            "$baseType(${constraints.lenght})"
+        } else {
+            baseType
+        }
+    }
+
+    private fun getColumnDataTypeStr() : String {
+        return when(dataType) {
+            ColumnDataType.STRING -> "varchar"
+            ColumnDataType.LONG -> "bigint"
+            ColumnDataType.INTEGER -> "int"
+            ColumnDataType.BOOLEAN -> "bool"
+            ColumnDataType.DATE ->  "date"
+            ColumnDataType.DATETIME ->  "datetime"
+            ColumnDataType.DOUBLE -> "double"
+            ColumnDataType.UNKNOWN -> "unknown"
+        }
+    }
+}

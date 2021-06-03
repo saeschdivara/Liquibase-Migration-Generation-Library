@@ -99,13 +99,10 @@ object MigrationGenerator {
 
                 if (existingColumn == null) {
                     // column was removed
-                    // TODO: implement drop column
+                    changes.add(Change(dropColumn = DropColumnChange(table.name, column.name)))
                 } else {
-                    val columnChange = calculateMigrationForColumn(column, existingColumn)
-
-                    if (columnChange != null) {
-                        changes.add(columnChange)
-                    }
+                    val columnChanges = calculateMigrationForColumn(table, column, existingColumn)
+                    changes.addAll(columnChanges)
                 }
             }
 
@@ -132,8 +129,31 @@ object MigrationGenerator {
         return null
     }
 
-    private fun calculateMigrationForColumn(oldColumn: Column, newColumn: Column) : Change? {
-        return null
+    private fun calculateMigrationForColumn(table: Table, oldColumn: Column, newColumn: Column) : List<Change> {
+
+        val changes = ArrayList<Change>()
+
+        if (oldColumn == newColumn) {
+            return emptyList()
+        }
+
+        if (oldColumn.constraints.nullable != newColumn.constraints.nullable) {
+            if (newColumn.constraints.nullable) {
+                // TODO: drop constraint
+            } else {
+                changes.add(Change(
+                    addNotNullConstraint = AddNotNullConstraintChange(table.name, oldColumn.name, oldColumn.getColumnDataType())
+                ))
+            }
+        }
+
+        if (oldColumn.constraints.lenght != newColumn.constraints.lenght) {
+            changes.add(Change(
+                modifyDataType = ModifyDataTypeChange(table.name, newColumn.name, newColumn.getColumnDataType())
+            ))
+        }
+
+        return changes
     }
 
     private fun generateChangeSetId() : String {

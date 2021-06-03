@@ -23,16 +23,44 @@ internal class MigrationGeneratorTest {
         )
 
         assertEquals(1, migration.databaseChangeLog.size)
+
+        val changeLog = migration.databaseChangeLog.first()
+        assertEquals(1, changeLog.changeSet.changes.size)
+
+        val change = changeLog.changeSet.changes.first()
+        assertNotNull(change.addColumn)
+
+        val addColumnChange = change.addColumn!!
+        assertEquals("bank", addColumnChange.tableName)
+
+        assertEquals(1, addColumnChange.columns.size)
+        val changeColumn = addColumnChange.columns.first().column
+
+        assertEquals("description", changeColumn.name)
+        assertEquals("varchar(40)", changeColumn.type)
+        assertEquals(false, changeColumn.constraints.nullable)
+        assertEquals(true, changeColumn.constraints.unique)
     }
 
     @Test
-    fun generateMigrationWhenFieldIsUpdated() {
+    fun `generate migration when string field length has changed`() {
         val migration = MigrationGenerator.generateNewMigration(
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-003/old",
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-003/new"
         )
 
         assertEquals(1, migration.databaseChangeLog.size)
+
+        val changeLog = migration.databaseChangeLog.first()
+        assertEquals(1, changeLog.changeSet.changes.size)
+
+        val change = changeLog.changeSet.changes.first()
+        assertNotNull(change.modifyDataType)
+
+        val modifyDataType = change.modifyDataType!!
+        assertEquals("bank", modifyDataType.tableName)
+        assertEquals("name", modifyDataType.columnName)
+        assertEquals("varchar(60)", modifyDataType.columnDataType)
     }
 
     @Test
@@ -43,6 +71,16 @@ internal class MigrationGeneratorTest {
         )
 
         assertEquals(1, migration.databaseChangeLog.size)
+
+        val changeLog = migration.databaseChangeLog.first()
+        assertEquals(1, changeLog.changeSet.changes.size)
+
+        val change = changeLog.changeSet.changes.first()
+        assertNotNull(change.dropColumn)
+
+        val dropColumn = change.dropColumn!!
+        assertEquals("bank", dropColumn.tableName)
+        assertEquals("name", dropColumn.columnName)
     }
 
     @Test
