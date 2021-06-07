@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1579845326265-1
+      author: generated
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: bankPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(40)
+            tableName: bank
+

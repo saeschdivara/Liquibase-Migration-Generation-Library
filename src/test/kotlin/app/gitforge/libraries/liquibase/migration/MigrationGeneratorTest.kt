@@ -86,11 +86,29 @@ internal class MigrationGeneratorTest {
     @Test
     fun generateMigrationWhenTableIsAdded() {
         val migration = MigrationGenerator.generateNewMigration(
-            "src/test/resources/test-data/MigrationGeneratorTest/dataset-002/old",
-            "src/test/resources/test-data/MigrationGeneratorTest/dataset-002/new"
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-005/old",
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-005/new"
         )
 
         assertEquals(1, migration.databaseChangeLog.size)
+
+        val changeLog = migration.databaseChangeLog.first()
+        assertEquals(1, changeLog.changeSet.changes.size)
+
+        val change = changeLog.changeSet.changes.first()
+        assertNotNull(change.createTable)
+
+        val createTable = change.createTable!!
+        assertEquals("bank_account", createTable.tableName)
+        assertEquals(2, createTable.columns.size)
+
+        val nameColumn = createTable.columns[0].column
+        assertEquals("name", nameColumn.name)
+        assertEquals("varchar(40)", nameColumn.type)
+
+        val idColumn = createTable.columns[1].column
+        assertEquals("id", idColumn.name)
+        assertEquals("bigint", idColumn.type)
     }
 
     @Test

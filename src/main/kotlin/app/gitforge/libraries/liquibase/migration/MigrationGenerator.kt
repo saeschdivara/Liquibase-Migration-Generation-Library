@@ -67,11 +67,32 @@ object MigrationGenerator {
     private fun calculateMigrations(oldSchema: Schema, newSchema: Schema) : ChangeLogEntryPoint {
         val changeLogs = ArrayList<DatabaseChangeLog>()
 
-        oldSchema.tables.forEach{
+        oldSchema.tables.forEach {
             val changeLog = calculateMigrationForTable(it, newSchema)
 
             if (changeLog != null) {
                 changeLogs.add(changeLog)
+            }
+        }
+
+        newSchema.tables.forEach {
+            val tableName = it.name
+            val tableInOldSchema = oldSchema.getTableByName(it.name)
+
+            // new table found
+            if (tableInOldSchema == null) {
+                val changes = ArrayList<Change>()
+                val columns = ArrayList<ChangeColumn>()
+
+                for (column in it.columns) {
+                    columns.add(ChangeColumn.fromSchema(column))
+                }
+
+                changes.add(Change(createTable = CreateTableChange(tableName, columns)))
+
+                changeLogs.add(DatabaseChangeLog(
+                    ChangeSet(generateChangeSetId(), "auto-gen-lib", changes)
+                ))
             }
         }
 

@@ -43,7 +43,7 @@ object KotlinEntityParser {
 
     fun getTableName(klass: KlassDeclaration, annotation: KlassAnnotation): String {
 
-        var klassName = "";
+        var klassName = ""
         if (annotation.arguments.isEmpty()) {
             klassName = klass.identifier?.rawName ?: klassName
         } else {
