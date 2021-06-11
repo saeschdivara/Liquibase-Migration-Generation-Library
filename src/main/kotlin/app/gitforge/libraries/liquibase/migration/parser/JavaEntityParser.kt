@@ -76,7 +76,7 @@ object JavaEntityParser : EntityParser {
 
         return fields.map {
             val typeName = (it.variables[0].type as ClassOrInterfaceType).nameAsString
-            var columnConstraint: ColumnConstraint
+            val columnConstraint: ColumnConstraint
 
             val idAnnotation = it.getAnnotationByName("Id")
             val isIdColumn = idAnnotation.isPresent
