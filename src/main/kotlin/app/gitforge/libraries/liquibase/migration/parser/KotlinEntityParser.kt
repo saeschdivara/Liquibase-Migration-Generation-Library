@@ -1,4 +1,4 @@
-package app.gitforge.libraries.liquibase.migration.kotlin
+package app.gitforge.libraries.liquibase.migration.parser
 
 import app.gitforge.libraries.liquibase.migration.schema.Column
 import app.gitforge.libraries.liquibase.migration.schema.ColumnConstraint
@@ -14,8 +14,8 @@ import kotlinx.ast.common.klass.StringComponentRaw
 import kotlinx.ast.grammar.kotlin.common.summary
 import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
 
-object KotlinEntityParser {
-    fun getTableFromEntityClass(filePath: String): Table? {
+object KotlinEntityParser : EntityParser {
+    override fun getTableFromEntityClass(filePath: String): Table? {
         val stringSource = AstSource.File(filePath)
         val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(stringSource)
         var table: Table? = null
@@ -37,11 +37,11 @@ object KotlinEntityParser {
         return table
     }
 
-    fun getTableAnnotation(klass: KlassDeclaration): KlassAnnotation? {
+    private fun getTableAnnotation(klass: KlassDeclaration): KlassAnnotation? {
         return klass.annotations.find { annotation -> annotation.identifier.first().identifier == "Entity" }
     }
 
-    fun getTableName(klass: KlassDeclaration, annotation: KlassAnnotation): String {
+    private fun getTableName(klass: KlassDeclaration, annotation: KlassAnnotation): String {
 
         var klassName = ""
         if (annotation.arguments.isEmpty()) {
@@ -51,26 +51,10 @@ object KotlinEntityParser {
             klassName = parsedAnnotation.parameters.find { parameter -> parameter.name == "name" }?.stringVal ?: klassName
         }
 
-        var tableName = ""
-        var isFirstChar = true
-
-        // translate klass style to table style
-        for (c in klassName) {
-            if (isFirstChar) {
-                isFirstChar = false
-                tableName = "${c.toLowerCase()}"
-            }
-            else if (c.isUpperCase()) {
-                tableName += "_${c.toLowerCase()}"
-            } else {
-                tableName += c
-            }
-        }
-
-        return tableName
+        return getTableStyleName(klassName)
     }
 
-    fun getTableColumns(klass: KlassDeclaration): List<Column> {
+    private fun getTableColumns(klass: KlassDeclaration): List<Column> {
         val columns = ArrayList<Column>()
         if (klass.parameter.isNotEmpty()) {
             val constructor = klass.parameter.first()
@@ -104,9 +88,9 @@ object KotlinEntityParser {
         return columns
     }
 
-    fun getTableColumnFromDeclaration(klassDecl: KlassDeclaration): Column? {
+    private fun getTableColumnFromDeclaration(klassDecl: KlassDeclaration): Column? {
         val propertyIdentifier = klassDecl.identifier
-        val columnDataType = ColumnDataType.getTypeByKotlinString(klassDecl.type.first().rawName)
+        val columnDataType = ColumnDataType.getTypeByVmString(klassDecl.type.first().rawName)
 
         if (propertyIdentifier != null) {
 
@@ -148,7 +132,7 @@ object KotlinEntityParser {
         return null
     }
 
-    fun getAnnotation(annotation: KlassAnnotation): Annotation {
+    private fun getAnnotation(annotation: KlassAnnotation): Annotation {
         val annotationName = annotation.identifier.first().identifier
         val attributes = ArrayList<AnnotationParameter>()
 

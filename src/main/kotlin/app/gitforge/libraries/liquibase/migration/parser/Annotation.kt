@@ -1,4 +1,4 @@
-package app.gitforge.libraries.liquibase.migration.kotlin
+package app.gitforge.libraries.liquibase.migration.parser
 
 class Annotation(val name: String, val parameters: List<AnnotationParameter>)
 

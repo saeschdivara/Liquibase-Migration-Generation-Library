@@ -1,6 +1,6 @@
 package app.gitforge.libraries.liquibase.migration
 
-import app.gitforge.libraries.liquibase.migration.kotlin.KotlinEntityParser
+import app.gitforge.libraries.liquibase.migration.parser.KotlinEntityParser
 import app.gitforge.libraries.liquibase.migration.schema.Column
 import app.gitforge.libraries.liquibase.migration.schema.Schema
 import app.gitforge.libraries.liquibase.migration.schema.Table

@@ -99,6 +99,14 @@
         </dependency>
         <!-- testing -->
 
+        <!-- java -->
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>3.22.1</version>
+        </dependency>
+        <!-- java -->
+
         <!-- kotlin -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

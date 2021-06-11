@@ -10,19 +10,20 @@ enum class ColumnDataType {
     DOUBLE,
     DATE,
     DATETIME,
-    UNKNOWN;
+    FOREIGN_KEY;
 
     companion object {
-        fun getTypeByKotlinString(str: String): ColumnDataType {
-            return when(str.replace("?", "")) {
-                "Boolean" -> BOOLEAN
-                "String" -> STRING
-                "Long" -> LONG
-                "Int" -> INTEGER
-                "Double" -> DOUBLE
-                "LocalDate" -> DATE
-                "LocalDateTime" -> DATETIME
-                else -> UNKNOWN
+        fun getTypeByVmString(str: String): ColumnDataType {
+            return when(str.replace("?", "").toLowerCase()) {
+                "boolean" -> BOOLEAN
+                "string" -> STRING
+                "long" -> LONG
+                "int" -> INTEGER
+                "integer" -> INTEGER
+                "double" -> DOUBLE
+                "localdate" -> DATE
+                "localdatetime" -> DATETIME
+                else -> FOREIGN_KEY
             }
         }
 
@@ -37,7 +38,7 @@ enum class ColumnDataType {
                 return STRING
             }
 
-            return UNKNOWN
+            return FOREIGN_KEY
         }
     }
 }
@@ -79,7 +80,7 @@ data class Column(val name: String, val dataType: ColumnDataType, val constraint
             ColumnDataType.DATE ->  "date"
             ColumnDataType.DATETIME ->  "datetime"
             ColumnDataType.DOUBLE -> "double"
-            ColumnDataType.UNKNOWN -> "unknown"
+            ColumnDataType.FOREIGN_KEY -> "foreign-key"
         }
     }
 }
