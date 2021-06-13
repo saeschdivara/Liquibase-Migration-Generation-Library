@@ -13,10 +13,10 @@ interface EntityParser {
         for (c in klassName) {
             if (isFirstChar) {
                 isFirstChar = false
-                tableName = "${c.toLowerCase()}"
+                tableName = "${c.lowercaseChar()}"
             }
             else if (c.isUpperCase()) {
-                tableName += "_${c.toLowerCase()}"
+                tableName += "_${c.lowercaseChar()}"
             } else {
                 tableName += c
             }
