@@ -26,6 +26,14 @@ object MigrationGenerator {
         mapper
     }
 
+    fun dumpMigration(oldStatePath: String, newStatePath: String, migrationFilePath: String) {
+        val migrationResult = generateNewMigration(oldStatePath, newStatePath)
+
+        if (migrationResult.databaseChangeLog.isNotEmpty()) {
+            File(migrationFilePath).writeText(mapper.writeValueAsString(migrationResult))
+        }
+    }
+
     fun generateNewMigration(oldStatePath: String, newStatePath: String): ChangeLogEntryPoint = runBlocking {
         val oldSchemas = ArrayList<Schema>()
 

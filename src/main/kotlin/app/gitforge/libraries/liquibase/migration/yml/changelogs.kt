@@ -1,9 +1,13 @@
 package app.gitforge.libraries.liquibase.migration.yml
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import app.gitforge.libraries.liquibase.migration.schema.Column as SchemaColumn
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ColumnConstraint(val primaryKey: Boolean = false, val primaryKeyName: String?, val nullable: Boolean?, val unique: Boolean = false)
-data class Column(val name: String, val type: String, val autoIncrement: Boolean?, val constraints: ColumnConstraint)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class Column(val name: String, val type: String, val autoIncrement: Boolean?, val constraints: ColumnConstraint?)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ChangeColumn(val column: Column) {
     companion object {
         fun fromSchema(column: SchemaColumn) : ChangeColumn {
@@ -25,13 +29,20 @@ data class ChangeColumn(val column: Column) {
         }
     }
 }
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class AddColumnChange(val tableName: String, val columns: List<ChangeColumn>)
-data class DropColumnChange(val tableName: String, val columnName: String)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class DropColumnChange(val tableName: String, val columnName: String?, val columns: List<ChangeColumn> = ArrayList())
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class AddNotNullConstraintChange(val tableName: String, val columnName: String, val columnDataType: String)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ModifyDataTypeChange(val tableName: String, val columnName: String, val columnDataType: String)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateTableChange(val tableName: String, val columns: List<ChangeColumn>)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class DropTableChange(val tableName: String, val cascadeConstraints: Boolean? = true)
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Change(
     val createTable: CreateTableChange? = null,
     val dropTable: DropTableChange? = null,
