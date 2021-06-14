@@ -50,7 +50,12 @@ data class ColumnConstraint(
     var lenght: Int = 0,
 ) {
     companion object {
-        fun fromYaml(constraint: YamlColumnConstraint) : ColumnConstraint {
+        fun fromYaml(constraint: YamlColumnConstraint?) : ColumnConstraint {
+
+            if (constraint == null) {
+                return ColumnConstraint(true)
+            }
+
             return ColumnConstraint(
                 constraint.nullable ?: !constraint.primaryKey,
                 constraint.primaryKey,

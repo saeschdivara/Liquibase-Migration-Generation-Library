@@ -38,8 +38,9 @@ internal class MigrationGeneratorTest {
 
         assertEquals("description", changeColumn.name)
         assertEquals("varchar(40)", changeColumn.type)
-        assertEquals(false, changeColumn.constraints.nullable)
-        assertEquals(true, changeColumn.constraints.unique)
+
+        assertEquals(false, changeColumn.constraints!!.nullable)
+        assertEquals(true, changeColumn.constraints!!.unique)
     }
 
     @Test

@@ -44,4 +44,20 @@ internal class KotlinEntityParserTest {
         assertEquals(false, primaryKey.constraints.isPrimaryKey)
         assertEquals(40, primaryKey.constraints.lenght)
     }
+
+    @Test
+    fun `Test parsing entity with foreign key`() {
+        val entity = KotlinEntityParser.getTableFromEntityClass("$basePath/BankAccount.kt")
+
+        assertNotNull(entity)
+
+        val realEntity = entity!!
+        assertEquals("bank_account", realEntity.name)
+        assertEquals(2, realEntity.columns.size)
+
+        val foreignKey = realEntity.columns.first()
+        assertEquals("bank_id", foreignKey.name)
+        assertEquals(ColumnDataType.FOREIGN_KEY, foreignKey.dataType)
+        assertEquals(true, foreignKey.constraints.nullable)
+    }
 }

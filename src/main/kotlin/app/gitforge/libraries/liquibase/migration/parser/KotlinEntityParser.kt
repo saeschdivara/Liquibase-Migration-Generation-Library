@@ -95,16 +95,17 @@ object KotlinEntityParser : EntityParser {
         if (propertyIdentifier != null) {
 
             var column: Column? = null
+            var columnName: String?
 
             for (parameterAnnotation in klassDecl.annotations) {
                 val parsedAnnotation = getAnnotation(parameterAnnotation)
                 val isId = parsedAnnotation.name == "Id"
                 // handle better id and column annotations together on something
                 if (parsedAnnotation.name == "Column" || isId) {
-                    val columnName = parsedAnnotation.parameters
+                    columnName = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "name" }
                         ?.stringVal
-                        ?: propertyIdentifier.rawName
+                        ?: getTableStyleName(propertyIdentifier.rawName)
 
                     val nullable = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "nullable" }
@@ -123,6 +124,17 @@ object KotlinEntityParser : EntityParser {
 
                     val constraints = ColumnConstraint(nullable, isId, unique, stringLength)
                     column = Column(columnName, columnDataType, constraints)
+                }
+
+                if (parsedAnnotation.name == "JoinColumn") {
+                    columnName = parsedAnnotation.parameters
+                        .find { parameter -> parameter.name == "name" }
+                        ?.stringVal
+                        ?: getTableStyleName(propertyIdentifier.rawName)
+
+                    if (column == null) {
+                        column = Column(columnName, columnDataType, ColumnConstraint(true))
+                    }
                 }
             }
 
