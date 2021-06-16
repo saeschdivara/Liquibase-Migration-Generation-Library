@@ -54,7 +54,7 @@ object KotlinEntityParser : EntityParser {
         return getTableStyleName(klassName)
     }
 
-    private fun getTableColumns(klass: KlassDeclaration): List<Column> {
+    private fun getTableColumns(klass: KlassDeclaration): MutableList<Column> {
         val columns = ArrayList<Column>()
         if (klass.parameter.isNotEmpty()) {
             val constructor = klass.parameter.first()

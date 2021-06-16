@@ -58,7 +58,7 @@ object JavaEntityParser : EntityParser {
         return childNode as MemberValuePair?
     }
 
-    private fun getTableColumns(klass: TypeDeclaration<*>): List<Column> {
+    private fun getTableColumns(klass: TypeDeclaration<*>): MutableList<Column> {
         val fields = klass.members
             .filterIsInstance<FieldDeclaration>()
             .filter {
@@ -104,7 +104,7 @@ object JavaEntityParser : EntityParser {
                 ColumnDataType.getTypeByVmString(typeName),
                 columnConstraint
             )
-        }
+        } as MutableList<Column>
     }
 
     private fun getColumnName(field: FieldDeclaration): String {

@@ -12,17 +12,32 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
         for (changeLog in changeLogs) {
             val changeSet = changeLog.changeSet
             for (change in changeSet.changes) {
+                println(change)
                 if (change.createTable != null) {
                     val action = change.createTable
                     val table = Table(action.tableName, getColumns(action.columns))
 
                     schema.tables.add(table)
                 }
+
+                if (change.dropColumn != null) {
+                    val action = change.dropColumn
+                    val affectedTable = schema.getTableByName(action.tableName) ?: continue
+
+                    val columnName = action.columnName
+                    if (columnName != null) {
+                        affectedTable.removeColumnByName(columnName)
+                    } else {
+                        for (column in action.columns) {
+                            affectedTable.removeColumnByName(column.column.name)
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun getColumns(columnDescriptions: List<ChangeColumn>): List<Column> {
+    private fun getColumns(columnDescriptions: List<ChangeColumn>): MutableList<Column> {
         val columns = ArrayList<Column>()
 
         for (columnDescription in columnDescriptions) {
