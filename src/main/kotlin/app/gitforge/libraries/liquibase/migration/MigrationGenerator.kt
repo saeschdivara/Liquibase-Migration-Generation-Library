@@ -39,12 +39,21 @@ object MigrationGenerator {
 
         val oldSchemaRun = launch {
             val schemaCalculator = SchemaChangeLogsCalculator(Schema())
+            val migrationFiles = ArrayList<String>()
 
             File(oldStatePath).walk().forEach {
                 if (it.isFile) {
-                    val logs: ChangeLogEntryPoint = mapper.readValue(Path.of(it.absolutePath))
-                    schemaCalculator.updateSchema(logs.databaseChangeLog)
+                    migrationFiles.add(it.absolutePath)
                 }
+            }
+
+            // migration files are not sorted correctly if only walking down the fs
+            migrationFiles.sort()
+
+            for (migrationFile in migrationFiles) {
+                println(migrationFile)
+                val logs: ChangeLogEntryPoint = mapper.readValue(Path.of(migrationFile))
+                schemaCalculator.updateSchema(logs.databaseChangeLog)
             }
 
             oldSchemas.add(schemaCalculator.schema)
