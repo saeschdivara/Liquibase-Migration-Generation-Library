@@ -1,0 +1,23 @@
+databaseChangeLog:
+- changeSet:
+    id: 1600665085787-1
+    author: generated
+    changes:
+    - addColumn:
+        tableName: bill
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: schedule_id
+            type: INT
+
+    - addForeignKeyConstraint:
+          baseColumnNames: schedule_id
+          baseTableName: bill
+          constraintName: fk_bill_transaction_schedule
+          onDelete: CASCADE
+          onUpdate: RESTRICT
+          referencedColumnNames: id
+          referencedTableName: transaction_schedule
+          validate: true

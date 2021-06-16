@@ -121,4 +121,14 @@ internal class MigrationGeneratorTest {
 
         assertEquals(1, migration.databaseChangeLog.size)
     }
+
+    @Test
+    fun `test migration generation for foreign keys without changes`() {
+        val migration = MigrationGenerator.generateNewMigration(
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-007/old",
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-007/new"
+        )
+
+        assertEquals(0, migration.databaseChangeLog.size)
+    }
 }
