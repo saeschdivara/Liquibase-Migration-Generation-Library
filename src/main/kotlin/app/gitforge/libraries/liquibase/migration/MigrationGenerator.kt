@@ -2,6 +2,7 @@ package app.gitforge.libraries.liquibase.migration
 
 import app.gitforge.libraries.liquibase.migration.parser.KotlinEntityParser
 import app.gitforge.libraries.liquibase.migration.schema.Column
+import app.gitforge.libraries.liquibase.migration.schema.ColumnDataType
 import app.gitforge.libraries.liquibase.migration.schema.Schema
 import app.gitforge.libraries.liquibase.migration.schema.Table
 import app.gitforge.libraries.liquibase.migration.yml.*
@@ -187,8 +188,22 @@ object MigrationGenerator {
 
         if (oldColumn.constraints.lenght != newColumn.constraints.lenght) {
             changes.add(Change(
-                modifyDataType = ModifyDataTypeChange(table.name, newColumn.name, newColumn.getColumnDataType())
+                modifyDataType = ModifyDataTypeChange(
+                    table.name,
+                    newColumn.name,
+                    oldColumn.getColumnDataType(),
+                    newColumn.getColumnDataType()
+                )
             ))
+        }
+
+        // check for datatype change
+        if (oldColumn.dataType != newColumn.dataType) {
+            if (newColumn.dataType == ColumnDataType.FOREIGN_KEY) {
+                // migrate to foreign key
+            } else {
+                //
+            }
         }
 
         return changes

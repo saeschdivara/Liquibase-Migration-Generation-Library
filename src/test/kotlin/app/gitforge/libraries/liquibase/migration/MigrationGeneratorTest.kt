@@ -61,7 +61,8 @@ internal class MigrationGeneratorTest {
         val modifyDataType = change.modifyDataType!!
         assertEquals("bank", modifyDataType.tableName)
         assertEquals("name", modifyDataType.columnName)
-        assertEquals("varchar(60)", modifyDataType.columnDataType)
+        assertEquals("varchar(40)", modifyDataType.columnDataType)
+        assertEquals("varchar(60)", modifyDataType.newDataType)
     }
 
     @Test
