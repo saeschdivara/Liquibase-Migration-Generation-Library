@@ -27,7 +27,7 @@ class Bill(
     @Column(nullable = false)
     var amount: Double,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2048)
     var description: String,
 
     @Id
