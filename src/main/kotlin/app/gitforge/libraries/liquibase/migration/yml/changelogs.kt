@@ -36,6 +36,13 @@ data class DropColumnChange(val tableName: String, val columnName: String?, val 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class AddNotNullConstraintChange(val tableName: String, val columnName: String, val columnDataType: String)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+data class AddForeignKeyConstraint(
+    val baseTableName: String, val baseColumnNames: List<String>, val constraintName: String,
+    val onDelete: String, val onUpdate: String,
+    val referencedTableName: String, val referencedColumnNames: List<String>,
+    val validate: Boolean
+)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ModifyDataTypeChange(val tableName: String, val columnName: String, val columnDataType: String, val newDataType: String)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateTableChange(val tableName: String, val columns: List<ChangeColumn>)
@@ -49,6 +56,7 @@ data class Change(
     val addColumn: AddColumnChange? = null,
     val dropColumn: DropColumnChange? = null,
     val addNotNullConstraint: AddNotNullConstraintChange? = null,
+    val addForeignKeyConstraint: AddForeignKeyConstraint? = null,
     val modifyDataType: ModifyDataTypeChange? = null,
 )
 
