@@ -13,13 +13,11 @@ databaseChangeLog:
             type: INT
 
     - addForeignKeyConstraint:
-          baseColumnNames:
-            - schedule_id
+          baseColumnNames: schedule_id
           baseTableName: bill
           constraintName: fk_bill_transaction_schedule
           onDelete: CASCADE
           onUpdate: RESTRICT
-          referencedColumnNames:
-            - id
+          referencedColumnNames: id
           referencedTableName: transaction_schedule
           validate: true
