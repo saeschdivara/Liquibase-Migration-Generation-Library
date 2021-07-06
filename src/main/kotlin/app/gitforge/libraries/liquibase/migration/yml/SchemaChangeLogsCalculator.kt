@@ -12,12 +12,20 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
         for (changeLog in changeLogs) {
             val changeSet = changeLog.changeSet
             for (change in changeSet.changes) {
-                println(change)
                 if (change.createTable != null) {
                     val action = change.createTable
                     val table = Table(action.tableName, getColumns(action.columns))
 
                     schema.tables.add(table)
+                }
+
+                if (change.addColumn != null) {
+                    val action = change.addColumn
+                    val affectedTable = schema.getTableByName(action.tableName) ?: continue
+
+                    getColumns(action.columns).forEach {
+                        affectedTable.columns.add(it)
+                    }
                 }
 
                 if (change.dropColumn != null) {
