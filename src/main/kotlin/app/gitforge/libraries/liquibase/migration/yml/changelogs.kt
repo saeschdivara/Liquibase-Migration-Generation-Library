@@ -38,9 +38,9 @@ data class AddNotNullConstraintChange(val tableName: String, val columnName: Str
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class AddForeignKeyConstraint(
     val baseTableName: String, val baseColumnNames: String, val constraintName: String,
-    val onDelete: String, val onUpdate: String,
+    val onDelete: String?, val onUpdate: String?,
     val referencedTableName: String, val referencedColumnNames: String,
-    val validate: Boolean
+    val validate: Boolean?
 )
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ModifyDataTypeChange(val tableName: String, val columnName: String, val columnDataType: String, val newDataType: String)
