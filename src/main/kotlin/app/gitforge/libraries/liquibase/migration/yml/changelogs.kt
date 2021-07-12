@@ -12,7 +12,7 @@ data class ChangeColumn(val column: Column) {
     companion object {
         fun fromSchema(column: SchemaColumn) : ChangeColumn {
 
-            var columnConstraint = column.constraints
+            val columnConstraint = column.constraints
             val constraint = ColumnConstraint(
                 columnConstraint.isPrimaryKey,
                 null,

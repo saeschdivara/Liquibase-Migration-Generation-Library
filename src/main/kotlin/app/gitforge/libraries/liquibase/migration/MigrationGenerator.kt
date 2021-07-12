@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.*
+import mu.KotlinLogging
 import java.io.File
 import java.nio.file.Path
 import java.time.LocalDateTime
@@ -20,6 +21,8 @@ import kotlin.collections.ArrayList
 
 
 object MigrationGenerator {
+    private val logger = KotlinLogging.logger {}
+
     private val mapper = let {
         val mapper = ObjectMapper(YAMLFactory())
         mapper.registerModule(KotlinModule())
@@ -64,7 +67,7 @@ object MigrationGenerator {
 
         runBlocking {
             File(newStatePath).walk().forEach {
-                if (it.isFile) {
+                if (it.isFile && it.name.endsWith(".kt")) {
                     launch {
                         val table = KotlinEntityParser.getTableFromEntityClass(it.absolutePath)
                         if (table != null) {

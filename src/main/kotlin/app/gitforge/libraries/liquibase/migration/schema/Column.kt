@@ -1,5 +1,6 @@
 package app.gitforge.libraries.liquibase.migration.schema
 
+import java.util.*
 import app.gitforge.libraries.liquibase.migration.yml.ColumnConstraint as YamlColumnConstraint
 
 enum class ColumnDataType {
@@ -14,7 +15,7 @@ enum class ColumnDataType {
 
     companion object {
         fun getTypeByVmString(str: String): ColumnDataType {
-            return when(str.replace("?", "").toLowerCase()) {
+            return when(str.replace("?", "").lowercase(Locale.getDefault())) {
                 "boolean" -> BOOLEAN
                 "string" -> STRING
                 "long" -> LONG
@@ -23,12 +24,16 @@ enum class ColumnDataType {
                 "double" -> DOUBLE
                 "localdate" -> DATE
                 "localdatetime" -> DATETIME
+
+                // handle literal types from kotlin
+                "BooleanLiteral" -> BOOLEAN
+
                 else -> FOREIGN_KEY
             }
         }
 
         fun getTypeByMigrationString(str: String): ColumnDataType {
-            val lowerStr = str.toLowerCase()
+            val lowerStr = str.lowercase(Locale.getDefault())
 
             if (lowerStr == "bigint") {
                 return LONG
@@ -65,7 +70,7 @@ data class ColumnConstraint(
     }
 }
 
-data class Column(val name: String, val dataType: ColumnDataType, val constraints: ColumnConstraint) {
+data class Column(val name: String, var dataType: ColumnDataType, var constraints: ColumnConstraint) {
     fun getColumnDataType() : String {
         val baseType = getColumnDataTypeStr()
 

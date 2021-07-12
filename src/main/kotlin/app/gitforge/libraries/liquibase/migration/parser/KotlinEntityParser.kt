@@ -7,10 +7,8 @@ import app.gitforge.libraries.liquibase.migration.schema.Table
 import kotlinx.ast.common.AstSource
 import kotlinx.ast.common.ast.DefaultAstNode
 import kotlinx.ast.common.ast.DefaultAstTerminal
-import kotlinx.ast.common.klass.KlassAnnotation
-import kotlinx.ast.common.klass.KlassDeclaration
-import kotlinx.ast.common.klass.KlassString
-import kotlinx.ast.common.klass.StringComponentRaw
+import kotlinx.ast.common.filter
+import kotlinx.ast.common.klass.*
 import kotlinx.ast.grammar.kotlin.common.summary
 import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
 
@@ -90,7 +88,22 @@ object KotlinEntityParser : EntityParser {
 
     private fun getTableColumnFromDeclaration(klassDecl: KlassDeclaration): Column? {
         val propertyIdentifier = klassDecl.identifier
-        val columnDataType = ColumnDataType.getTypeByVmString(klassDecl.type.first().rawName)
+
+        var rawTypeName = ""
+        if (klassDecl.type.isEmpty()) {
+            if (klassDecl.children.size >= 2) {
+                val valueNode = klassDecl.children[1] as DefaultAstNode
+                if (valueNode.description != "literalConstant") {
+                    TODO("Throw appropriate exception here")
+                } else {
+                    rawTypeName = valueNode.children.first().description
+                }
+            }
+        } else {
+            rawTypeName = klassDecl.type.first().rawName
+        }
+
+        var columnDataType = ColumnDataType.getTypeByVmString(rawTypeName)
 
         if (propertyIdentifier != null) {
 
@@ -99,9 +112,10 @@ object KotlinEntityParser : EntityParser {
 
             for (parameterAnnotation in klassDecl.annotations) {
                 val parsedAnnotation = getAnnotation(parameterAnnotation)
-                val isId = parsedAnnotation.name == "Id"
+                val annotationName = parsedAnnotation.name
+                val isId = annotationName == "Id"
                 // handle better id and column annotations together on something
-                if (parsedAnnotation.name == "Column" || isId) {
+                if (annotationName == "Column" || isId) {
                     columnName = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "name" }
                         ?.stringVal
@@ -123,10 +137,14 @@ object KotlinEntityParser : EntityParser {
                         ?: 0
 
                     val constraints = ColumnConstraint(nullable, isId, unique, stringLength)
-                    column = Column(columnName, columnDataType, constraints)
+                    if (column == null) {
+                        column = Column(columnName, columnDataType, constraints)
+                    } else {
+                        TODO("Implement case when column is not the first column creating annotation")
+                    }
                 }
 
-                if (parsedAnnotation.name == "JoinColumn") {
+                if (annotationName == "JoinColumn") {
                     columnName = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "name" }
                         ?.stringVal
@@ -134,6 +152,37 @@ object KotlinEntityParser : EntityParser {
 
                     if (column == null) {
                         column = Column(columnName, columnDataType, ColumnConstraint(true))
+                    }
+                }
+
+                if (annotationName == "Enumerated") {
+                    if (column == null) {
+
+                        val enumeratedParameterDeclaration = parameterAnnotation.children.first() as KlassDeclaration
+                        val enumeratedParameter = enumeratedParameterDeclaration.children.first() as KlassIdentifier
+                        if (enumeratedParameter.identifier == "EnumType") {
+                            val parameter = enumeratedParameter.children.first() as DefaultAstNode
+                            val parameterSuffix = parameter.children.first() as DefaultAstNode
+                            val enumType = parameterSuffix.children[1] as DefaultAstNode // ignoring the dot
+                            val enumTypeValue = enumType.children.first() as DefaultAstTerminal
+                            columnDataType = ColumnDataType.getTypeByVmString(enumTypeValue.text)
+                            columnName = getTableStyleName(propertyIdentifier.rawName)
+                            column = Column(columnName, columnDataType, ColumnConstraint(true))
+                        } else {
+                            TODO("Resolve parameter for enumerated annotation")
+                        }
+                    } else {
+                        val enumeratedParameterDeclaration = parameterAnnotation.children.first() as KlassDeclaration
+                        val enumeratedParameter = enumeratedParameterDeclaration.children.first() as KlassIdentifier
+                        if (enumeratedParameter.identifier == "EnumType") {
+                            val parameter = enumeratedParameter.children.first() as DefaultAstNode
+                            val parameterSuffix = parameter.children.first() as DefaultAstNode
+                            val enumType = parameterSuffix.children[1] as DefaultAstNode // ignoring the dot
+                            val enumTypeValue = enumType.children.first() as DefaultAstTerminal
+                            column.dataType = ColumnDataType.getTypeByVmString(enumTypeValue.text)
+                        } else {
+                            TODO("Resolve parameter for enumerated annotation")
+                        }
                     }
                 }
             }
