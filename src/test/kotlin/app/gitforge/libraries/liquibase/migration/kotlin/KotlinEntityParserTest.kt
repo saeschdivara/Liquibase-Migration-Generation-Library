@@ -42,7 +42,7 @@ internal class KotlinEntityParserTest {
         assertEquals(false, primaryKey.constraints.nullable)
         assertEquals(true, primaryKey.constraints.isUnique)
         assertEquals(false, primaryKey.constraints.isPrimaryKey)
-        assertEquals(40, primaryKey.constraints.lenght)
+        assertEquals(40, primaryKey.constraints.length)
     }
 
     @Test

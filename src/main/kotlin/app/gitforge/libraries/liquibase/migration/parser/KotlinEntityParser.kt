@@ -134,7 +134,6 @@ object KotlinEntityParser : EntityParser {
                     val stringLength = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "length" }
                         ?.integerVal
-                        ?: 0
 
                     val constraints = ColumnConstraint(nullable, isId, unique, stringLength)
                     if (column == null) {

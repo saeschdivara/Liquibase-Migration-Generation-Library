@@ -94,7 +94,7 @@ object JavaEntityParser : EntityParser {
                         "length" -> length = it.value.asIntegerLiteralExpr().asNumber().toInt()
                     }
                 }
-                columnConstraint = ColumnConstraint(nullable, isPrimaryKey = isIdColumn, isUnique = unique, lenght = length)
+                columnConstraint = ColumnConstraint(nullable, isPrimaryKey = isIdColumn, isUnique = unique, length = length)
             } else {
                 columnConstraint = ColumnConstraint(!isIdColumn, isPrimaryKey = isIdColumn)
             }

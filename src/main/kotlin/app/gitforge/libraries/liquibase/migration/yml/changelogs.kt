@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import app.gitforge.libraries.liquibase.migration.schema.Column as SchemaColumn
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class ColumnConstraint(val primaryKey: Boolean = false, val primaryKeyName: String?, val nullable: Boolean?, val unique: Boolean = false)
+data class ColumnConstraint(val primaryKey: Boolean?, val primaryKeyName: String?, val nullable: Boolean?, val unique: Boolean?)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Column(val name: String, val type: String, val autoIncrement: Boolean?, val constraints: ColumnConstraint?)
 @JsonInclude(JsonInclude.Include.NON_NULL)

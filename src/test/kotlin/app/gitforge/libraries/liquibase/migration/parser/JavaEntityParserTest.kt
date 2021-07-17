@@ -34,7 +34,7 @@ internal class JavaEntityParserTest {
         assertEquals(false, column3.constraints.isPrimaryKey)
         assertEquals(false, column3.constraints.nullable)
         assertEquals(false, column3.constraints.isUnique)
-        assertEquals(40, column3.constraints.lenght)
+        assertEquals(40, column3.constraints.length)
 
         val column4 = entity.columns[3]
         assertEquals("account_number", column4.name)
@@ -42,6 +42,6 @@ internal class JavaEntityParserTest {
         assertEquals(false, column4.constraints.isPrimaryKey)
         assertEquals(true, column4.constraints.nullable)
         assertEquals(false, column4.constraints.isUnique)
-        assertEquals(15, column4.constraints.lenght)
+        assertEquals(15, column4.constraints.length)
     }
 }

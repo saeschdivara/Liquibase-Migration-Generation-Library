@@ -180,7 +180,8 @@ object MigrationGenerator {
         }
 
         if (oldColumn.constraints.nullable != newColumn.constraints.nullable) {
-            if (newColumn.constraints.nullable) {
+            val nullable = newColumn.constraints.nullable
+            if (nullable != null && nullable) {
                 // TODO: drop constraint
             } else {
                 changes.add(Change(
@@ -189,7 +190,7 @@ object MigrationGenerator {
             }
         }
 
-        if (oldColumn.constraints.lenght != newColumn.constraints.lenght) {
+        if (oldColumn.constraints.length != newColumn.constraints.length) {
             changes.add(Change(
                 modifyDataType = ModifyDataTypeChange(
                     table.name,

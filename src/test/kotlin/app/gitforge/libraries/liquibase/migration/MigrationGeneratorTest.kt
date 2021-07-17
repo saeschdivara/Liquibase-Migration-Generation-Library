@@ -157,4 +157,29 @@ internal class MigrationGeneratorTest {
         assertEquals("provider", providerColumn.name)
         assertEquals("varchar", providerColumn.type)
     }
+
+    @Test
+    fun `test migration generation for constant data`() {
+        val migration = MigrationGenerator.generateNewMigration(
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-008/old",
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-008/new"
+        )
+
+        assertEquals(1, migration.databaseChangeLog.size)
+
+        val changeLog = migration.databaseChangeLog.first()
+        val changes = changeLog.changeSet.changes
+
+        assertEquals(1, changes.size)
+        val change = changes.first()
+
+        assertNotNull(change.createTable)
+        val createTable = change.createTable!!
+
+        assertEquals(8, createTable.columns.size)
+
+        val emailVerifiedColumn = createTable.columns[4].column
+        assertEquals("email_verified", emailVerifiedColumn.name)
+        assertEquals("bool", emailVerifiedColumn.type)
+    }
 }

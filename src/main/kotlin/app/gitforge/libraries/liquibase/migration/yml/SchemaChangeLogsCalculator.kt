@@ -59,7 +59,7 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
             if (columnData.type.contains("(")) {
                 val typeLengthStr = "\\((.*)\\)".toRegex().find(columnData.type)!!
 
-                column.constraints.lenght = typeLengthStr.groupValues[1].toInt()
+                column.constraints.length = typeLengthStr.groupValues[1].toInt()
             }
 
             columns.add(column)

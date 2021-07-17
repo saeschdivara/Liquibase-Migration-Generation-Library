@@ -26,7 +26,7 @@ enum class ColumnDataType {
                 "localdatetime" -> DATETIME
 
                 // handle literal types from kotlin
-                "BooleanLiteral" -> BOOLEAN
+                "booleanliteral" -> BOOLEAN
 
                 else -> FOREIGN_KEY
             }
@@ -49,10 +49,10 @@ enum class ColumnDataType {
 }
 
 data class ColumnConstraint(
-    val nullable: Boolean,
-    var isPrimaryKey: Boolean = false,
-    var isUnique: Boolean = false,
-    var lenght: Int = 0,
+    val nullable: Boolean? = null,
+    var isPrimaryKey: Boolean? = null,
+    var isUnique: Boolean? = null,
+    var length: Int? = null,
 ) {
     companion object {
         fun fromYaml(constraint: YamlColumnConstraint?) : ColumnConstraint {
@@ -61,10 +61,17 @@ data class ColumnConstraint(
                 return ColumnConstraint(true)
             }
 
+            var nullable = constraint.nullable
+
+            if (nullable == null && constraint.primaryKey != null) {
+                nullable = !constraint.primaryKey
+            }
+
             return ColumnConstraint(
-                constraint.nullable ?: !constraint.primaryKey,
+                nullable,
                 constraint.primaryKey,
-                constraint.unique
+                constraint.unique,
+                length = null
             )
         }
     }
@@ -73,9 +80,10 @@ data class ColumnConstraint(
 data class Column(val name: String, var dataType: ColumnDataType, var constraints: ColumnConstraint) {
     fun getColumnDataType() : String {
         val baseType = getColumnDataTypeStr()
+        val length = constraints.length
 
-        return if (constraints.lenght > 0) {
-            "$baseType(${constraints.lenght})"
+        return if (length != null && length > 0) {
+            "$baseType(${constraints.length})"
         } else {
             baseType
         }
