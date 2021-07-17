@@ -58,17 +58,11 @@ data class ColumnConstraint(
         fun fromYaml(constraint: YamlColumnConstraint?) : ColumnConstraint {
 
             if (constraint == null) {
-                return ColumnConstraint(true)
-            }
-
-            var nullable = constraint.nullable
-
-            if (nullable == null && constraint.primaryKey != null) {
-                nullable = !constraint.primaryKey
+                return ColumnConstraint()
             }
 
             return ColumnConstraint(
-                nullable,
+                constraint.nullable,
                 constraint.primaryKey,
                 constraint.unique,
                 length = null

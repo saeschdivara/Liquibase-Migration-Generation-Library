@@ -124,12 +124,10 @@ object KotlinEntityParser : EntityParser {
                     val nullable = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "nullable" }
                         ?.booleanVal
-                        ?: !isId
 
                     val unique = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "unique" }
                         ?.booleanVal
-                        ?: isId
 
                     val stringLength = parsedAnnotation.parameters
                         .find { parameter -> parameter.name == "length" }
