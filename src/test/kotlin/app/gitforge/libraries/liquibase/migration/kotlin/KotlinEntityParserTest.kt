@@ -22,7 +22,7 @@ internal class KotlinEntityParserTest {
         val primaryKey = realEntity.columns.first()
         assertEquals("id", primaryKey.name)
         assertEquals(ColumnDataType.LONG, primaryKey.dataType)
-        assertEquals(false, primaryKey.constraints.nullable)
+        assertEquals(null, primaryKey.constraints.nullable)
         assertEquals(true, primaryKey.constraints.isPrimaryKey)
     }
 
