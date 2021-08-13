@@ -147,6 +147,10 @@ internal class MigrationGeneratorTest {
 
         val firstChange = changeLog.changeSet.changes.first()
         assertNotNull(firstChange.addColumn)
+        val addColumnChange = firstChange.addColumn!!
+        assertEquals(1, addColumnChange.columns.size)
+        val addedColumn = addColumnChange.columns.first().column
+        assertEquals("bigint", addedColumn.type)
 
         val secondChange = changeLog.changeSet.changes[1]
         assertNotNull(secondChange.addForeignKeyConstraint)

@@ -168,6 +168,9 @@ object MigrationGenerator {
                             referencedTableName = referencedTable!!.name,
                             referencedColumnNames = "id" // TODO: support reference column name extraction from annotations
                         )))
+
+                        // currently, assuming that all referenced columns are longs
+                        columnChanges.first().column.type = "bigint";
                     }
                 }
             }

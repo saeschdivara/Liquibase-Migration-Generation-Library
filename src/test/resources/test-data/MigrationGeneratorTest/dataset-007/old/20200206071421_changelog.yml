@@ -35,14 +35,4 @@ databaseChangeLog:
               nullable: false
             name: description
             type: VARCHAR(2048)
-        - column:
-            constraints:
-              nullable: false
-            name: account_id
-            type: BIGINT
-        - column:
-            constraints:
-              nullable: false
-            name: user_id
-            type: BIGINT
         tableName: bill
