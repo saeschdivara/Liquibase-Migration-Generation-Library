@@ -1,0 +1,51 @@
+databaseChangeLog:
+- changeSet:
+    id: 1590665085787-7
+    author: generated
+    changes:
+    - createTable:
+        tableName: transaction_schedule
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                primaryKey: true
+                primaryKeyName: transactionSchedulePK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: time_type
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: month
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: day_of_month
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: from_date
+            type: date
+        - column:
+            name: due_date
+            type: date
+
+    - dropColumn:
+        tableName: bill
+        columns:
+        - column:
+            name: from_date
+            type: date
+        - column:
+            name: due_date
+            type: date
+        - column:
+            name: day_of_month
+            type: SMALLINT

@@ -29,7 +29,7 @@ object JavaEntityParser : EntityParser {
             if (entityAnnotation != null) {
                 val tableName = getTableName(klass, entityAnnotation)
                 val columns = getTableColumns(klass)
-                table = Table(tableName, columns)
+                table = Table(tableName, klass.nameAsString, columns)
             }
         }
 
@@ -77,6 +77,9 @@ object JavaEntityParser : EntityParser {
         return fields.map {
             val typeName = (it.variables[0].type as ClassOrInterfaceType).nameAsString
             val columnConstraint: ColumnConstraint
+            val annotations = it.annotations.map {
+                getAnnotation(it)
+            }
 
             val idAnnotation = it.getAnnotationByName("Id")
             val isIdColumn = idAnnotation.isPresent
@@ -102,7 +105,8 @@ object JavaEntityParser : EntityParser {
             Column(
                 getColumnName(it),
                 ColumnDataType.getTypeByVmString(typeName),
-                columnConstraint
+                columnConstraint,
+                annotations
             )
         } as MutableList<Column>
     }
@@ -115,11 +119,12 @@ object JavaEntityParser : EntityParser {
             return fieldName
         }
 
-        val namePair = getAnnotationParameter(columnAnnotation.get(), "name")
-        if (namePair == null) {
-            return fieldName
-        }
+        val namePair = getAnnotationParameter(columnAnnotation.get(), "name") ?: return fieldName
 
         return namePair.value.asStringLiteralExpr().asString()
+    }
+
+    private fun getAnnotation(expr: AnnotationExpr): Annotation {
+        return Annotation(expr.nameAsString, ArrayList())
     }
 }

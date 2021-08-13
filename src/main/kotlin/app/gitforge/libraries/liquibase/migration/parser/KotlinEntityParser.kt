@@ -25,7 +25,7 @@ object KotlinEntityParser : EntityParser {
                         val tableName = getTableName(klass, tableAnnotation)
                         val columns = getTableColumns(klass)
 
-                        table = Table(tableName, columns)
+                        table = Table(tableName, klass.identifier?.rawName ?: "", columns)
                         return@run
                     }
                 }
@@ -110,6 +110,8 @@ object KotlinEntityParser : EntityParser {
             var column: Column? = null
             var columnName: String?
 
+            val annotations = klassDecl.annotations.map { getAnnotation(it) }
+
             for (parameterAnnotation in klassDecl.annotations) {
                 val parsedAnnotation = getAnnotation(parameterAnnotation)
                 val annotationName = parsedAnnotation.name
@@ -135,7 +137,7 @@ object KotlinEntityParser : EntityParser {
 
                     val constraints = ColumnConstraint(nullable, isId, unique, stringLength)
                     if (column == null) {
-                        column = Column(columnName, columnDataType, constraints)
+                        column = Column(columnName, columnDataType, constraints, annotations)
                     } else {
                         TODO("Implement case when column is not the first column creating annotation")
                     }
@@ -148,7 +150,7 @@ object KotlinEntityParser : EntityParser {
                         ?: getTableStyleName(propertyIdentifier.rawName)
 
                     if (column == null) {
-                        column = Column(columnName, columnDataType, ColumnConstraint(true))
+                        column = Column(columnName, columnDataType, ColumnConstraint(true), annotations)
                     }
                 }
 
@@ -164,7 +166,7 @@ object KotlinEntityParser : EntityParser {
                             val enumTypeValue = enumType.children.first() as DefaultAstTerminal
                             columnDataType = ColumnDataType.getTypeByVmString(enumTypeValue.text)
                             columnName = getTableStyleName(propertyIdentifier.rawName)
-                            column = Column(columnName, columnDataType, ColumnConstraint(true))
+                            column = Column(columnName, columnDataType, ColumnConstraint(true), annotations)
                         } else {
                             TODO("Resolve parameter for enumerated annotation")
                         }

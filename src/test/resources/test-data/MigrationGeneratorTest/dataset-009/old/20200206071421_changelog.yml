@@ -1,0 +1,38 @@
+databaseChangeLog:
+- changeSet:
+    id: 1580973552805-1
+    author: generated
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: billPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: amount
+            type: FLOAT8
+        - column:
+            name: due_date
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            name: day_of_month
+            type: SMALLINT
+        - column:
+            constraints:
+                nullable: false
+            name: from_date
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            name: description
+            type: VARCHAR(2048)
+        tableName: bill

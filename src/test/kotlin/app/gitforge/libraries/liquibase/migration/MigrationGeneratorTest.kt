@@ -134,6 +134,25 @@ internal class MigrationGeneratorTest {
     }
 
     @Test
+    fun `test migration generation for missing foreign keys`() {
+        val migration = MigrationGenerator.generateNewMigration(
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-009/old",
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-009/new"
+        )
+
+        assertEquals(1, migration.databaseChangeLog.size)
+
+        val changeLog = migration.databaseChangeLog.first()
+        assertEquals(2, changeLog.changeSet.changes.size)
+
+        val firstChange = changeLog.changeSet.changes.first()
+        assertNotNull(firstChange.addColumn)
+
+        val secondChange = changeLog.changeSet.changes[1]
+        assertNotNull(secondChange.addForeignKeyConstraint)
+    }
+
+    @Test
     fun `test migration generation for no old data`() {
         val migration = MigrationGenerator.generateNewMigration(
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-008/old",

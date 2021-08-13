@@ -55,7 +55,6 @@ object MigrationGenerator {
             migrationFiles.sort()
 
             for (migrationFile in migrationFiles) {
-                println(migrationFile)
                 val logs: ChangeLogEntryPoint = mapper.readValue(Path.of(migrationFile))
                 schemaCalculator.updateSchema(logs.databaseChangeLog)
             }
@@ -158,6 +157,18 @@ object MigrationGenerator {
                     columnChanges.add(ChangeColumn.fromSchema(column))
 
                     changes.add(Change(addColumn = AddColumnChange(table.name, columnChanges)))
+
+                    if (column.dataType == ColumnDataType.FOREIGN_KEY) {
+                        val referencedTable = newSchema.getTableByClassName(column.dataType.rawTypeName)
+
+                        changes.add(Change(addForeignKeyConstraint = AddForeignKeyConstraint(
+                            baseTableName = table.name,
+                            baseColumnNames = column.name,
+                            constraintName = "${column.name}_fk",
+                            referencedTableName = referencedTable!!.name,
+                            referencedColumnNames = "id"
+                        )))
+                    }
                 }
             }
 

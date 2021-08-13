@@ -14,7 +14,7 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
             for (change in changeSet.changes) {
                 if (change.createTable != null) {
                     val action = change.createTable
-                    val table = Table(action.tableName, getColumns(action.columns))
+                    val table = Table(action.tableName, "", getColumns(action.columns))
 
                     schema.tables.add(table)
                 }
@@ -53,7 +53,8 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
             val column = Column(
                 columnData.name,
                 ColumnDataType.getTypeByMigrationString(columnData.type),
-                ColumnConstraint.fromYaml(columnData.constraints)
+                ColumnConstraint.fromYaml(columnData.constraints),
+                annotations = ArrayList()
             )
 
             if (columnData.type.contains("(")) {
