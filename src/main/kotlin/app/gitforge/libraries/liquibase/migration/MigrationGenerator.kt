@@ -166,7 +166,7 @@ object MigrationGenerator {
                             baseColumnNames = column.name,
                             constraintName = "${column.name}_fk",
                             referencedTableName = referencedTable!!.name,
-                            referencedColumnNames = "id"
+                            referencedColumnNames = "id" // TODO: support reference column name extraction from annotations
                         )))
                     }
                 }
