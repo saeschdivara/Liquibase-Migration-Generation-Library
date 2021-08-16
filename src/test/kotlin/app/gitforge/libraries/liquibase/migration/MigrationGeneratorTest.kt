@@ -205,4 +205,14 @@ internal class MigrationGeneratorTest {
         assertEquals("email_verified", emailVerifiedColumn.name)
         assertEquals("bool", emailVerifiedColumn.type)
     }
+
+    @Test
+    fun `test migration generation for embedded key`() {
+        val migration = MigrationGenerator.generateNewMigration(
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-010/old",
+            "src/test/resources/test-data/MigrationGeneratorTest/dataset-010/new"
+        )
+
+        assertEquals(4, migration.databaseChangeLog.size)
+    }
 }
