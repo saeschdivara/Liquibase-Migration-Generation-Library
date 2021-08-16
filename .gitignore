@@ -1,6 +1,7 @@
 ### IntelliJ ###
 *.iml
 .idea/
+.gradle
 
 ### JVM ###
 target/
