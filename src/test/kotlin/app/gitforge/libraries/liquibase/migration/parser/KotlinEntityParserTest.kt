@@ -1,6 +1,5 @@
-package app.gitforge.libraries.liquibase.migration.kotlin
+package app.gitforge.libraries.liquibase.migration.parser
 
-import app.gitforge.libraries.liquibase.migration.parser.KotlinEntityParser
 import app.gitforge.libraries.liquibase.migration.schema.ColumnDataType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
