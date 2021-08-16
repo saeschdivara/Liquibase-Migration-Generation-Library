@@ -102,10 +102,27 @@ object MigrationGenerator {
             // new table found
             if (tableInOldSchema == null) {
                 val changes = ArrayList<Change>()
+                val foreignKeyChanges = ArrayList<Change>()
                 val columns = ArrayList<ChangeColumn>()
 
                 for (column in it.columns) {
-                    columns.add(ChangeColumn.fromSchema(column))
+                    val columnChange = ChangeColumn.fromSchema(column)
+                    columns.add(columnChange)
+
+                    if (column.dataType == ColumnDataType.FOREIGN_KEY) {
+                        val referencedTable = newSchema.getTableByClassName(column.dataType.rawTypeName)
+
+                        foreignKeyChanges.add(Change(addForeignKeyConstraint = AddForeignKeyConstraint(
+                            baseTableName = tableName,
+                            baseColumnNames = column.name,
+                            constraintName = "${column.name}_fk",
+                            referencedTableName = referencedTable!!.name,
+                            referencedColumnNames = "id" // TODO: support reference column name extraction from annotations
+                        )))
+
+                        // currently, assuming that all referenced columns are longs
+                        columnChange.column.type = "bigint";
+                    }
                 }
 
                 changes.add(Change(createTable = CreateTableChange(tableName, columns)))
@@ -113,6 +130,12 @@ object MigrationGenerator {
                 changeLogs.add(DatabaseChangeLog(
                     ChangeSet(generateChangeSetId(), "auto-gen-lib", changes)
                 ))
+
+                if (foreignKeyChanges.isNotEmpty()) {
+                    changeLogs.add(DatabaseChangeLog(
+                        ChangeSet(generateChangeSetId(), "auto-gen-lib", foreignKeyChanges)
+                    ))
+                }
             }
         }
 

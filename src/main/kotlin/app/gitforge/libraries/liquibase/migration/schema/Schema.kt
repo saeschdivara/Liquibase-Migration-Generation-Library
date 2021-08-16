@@ -9,6 +9,13 @@ data class Schema(val name: String? = null, val tables: MutableList<Table> = Arr
     }
 
     fun getTableByClassName(name: String) : Table? {
+
+        // handle case when generics are used (lists / sets)
+        if (name.contains("<")) {
+            val realClassName = name.split("<")[1].replace(">", "")
+            return tables.find { it.clsName == realClassName }
+        }
+
         return tables.find { it.clsName == name }
     }
 }
