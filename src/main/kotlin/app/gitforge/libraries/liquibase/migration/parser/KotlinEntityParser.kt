@@ -7,12 +7,15 @@ import app.gitforge.libraries.liquibase.migration.schema.Table
 import kotlinx.ast.common.AstSource
 import kotlinx.ast.common.ast.DefaultAstNode
 import kotlinx.ast.common.ast.DefaultAstTerminal
-import kotlinx.ast.common.filter
 import kotlinx.ast.common.klass.*
 import kotlinx.ast.grammar.kotlin.common.summary
 import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
+import mu.KotlinLogging
 
 object KotlinEntityParser : EntityParser {
+
+    private val logger = KotlinLogging.logger {}
+
     override fun getTableFromEntityClass(filePath: String): Table? {
         val stringSource = AstSource.File(filePath)
         val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(stringSource)
@@ -89,8 +92,10 @@ object KotlinEntityParser : EntityParser {
     private fun getTableColumnFromDeclaration(klassDecl: KlassDeclaration): Column? {
         val propertyIdentifier = klassDecl.identifier
 
+        logger.info { "Determine column raw type" }
         var rawTypeName = ""
         if (klassDecl.type.isEmpty()) {
+            logger.info { "Klass declaration type is empty" }
             if (klassDecl.children.size >= 2) {
                 val valueNode = klassDecl.children[1] as DefaultAstNode
                 if (valueNode.description != "literalConstant") {
@@ -100,6 +105,7 @@ object KotlinEntityParser : EntityParser {
                 }
             }
         } else {
+            logger.info { "Klass declaration type is not empty ${klassDecl.type}" }
             rawTypeName = klassDecl.type.first().rawName
         }
 

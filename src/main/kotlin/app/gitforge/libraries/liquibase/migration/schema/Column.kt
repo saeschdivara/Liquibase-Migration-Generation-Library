@@ -53,6 +53,10 @@ enum class ColumnDataType {
             return FOREIGN_KEY
         }
     }
+
+    override fun toString(): String {
+        return super.toString() + "(" + rawTypeName + ")"
+    }
 }
 
 data class ColumnConstraint(
