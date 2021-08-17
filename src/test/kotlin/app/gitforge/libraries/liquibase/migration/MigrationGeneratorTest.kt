@@ -1,9 +1,11 @@
 package app.gitforge.libraries.liquibase.migration
 
+import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class MigrationGeneratorTest {
+    private val logger = KotlinLogging.logger {}
 
     @Test
     fun generateNoMigrationWhenNothingHasChanged() {
@@ -135,6 +137,9 @@ internal class MigrationGeneratorTest {
 
     @Test
     fun `test migration generation for missing foreign keys`() {
+        logger.info { "Start test 'test migration generation for missing foreign keys'" }
+
+        logger.info { "Klass declaration type is empty" }
         val migration = MigrationGenerator.generateNewMigration(
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-009/old",
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-009/new"
