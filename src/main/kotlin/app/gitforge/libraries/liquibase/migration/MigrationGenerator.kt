@@ -184,6 +184,12 @@ object MigrationGenerator {
                     if (column.dataType == ColumnDataType.FOREIGN_KEY) {
                         val referencedTable = newSchema.getTableByClassName(column.dataType.rawTypeName)
 
+                        if (referencedTable == null) {
+                            logger.warn {
+                                "Could not find reference table, only the following exist in the new schema: ${newSchema.tables}"
+                            }
+                        }
+
                         changes.add(Change(addForeignKeyConstraint = AddForeignKeyConstraint(
                             baseTableName = table.name,
                             baseColumnNames = column.name,
