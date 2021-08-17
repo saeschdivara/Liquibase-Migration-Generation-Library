@@ -105,11 +105,14 @@ object KotlinEntityParser : EntityParser {
                 }
             }
         } else {
-            logger.info { "Klass declaration type is not empty ${klassDecl.type.first().identifier}" }
             rawTypeName = klassDecl.type.first().identifier
+            logger.info { "Klass declaration type is not empty $rawTypeName" }
         }
 
         var columnDataType = ColumnDataType.getTypeByVmString(rawTypeName)
+        logger.info { "Type before assignment: ${columnDataType.rawTypeName}" }
+        columnDataType.rawTypeName = rawTypeName
+        logger.info { "Type after assignment: ${columnDataType.rawTypeName}" }
 
         if (propertyIdentifier != null) {
 
