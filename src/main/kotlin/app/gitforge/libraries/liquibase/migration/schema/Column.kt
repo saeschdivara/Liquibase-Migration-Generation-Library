@@ -14,8 +14,6 @@ enum class ColumnDataType {
     DATETIME,
     FOREIGN_KEY;
 
-    var rawTypeName: String = ""
-
     companion object {
         fun getTypeByVmString(str: String): ColumnDataType {
             val type = when(str.replace("?", "").lowercase(Locale.getDefault())) {
@@ -34,8 +32,6 @@ enum class ColumnDataType {
                 else -> FOREIGN_KEY
             }
 
-            type.rawTypeName = str
-
             return type
         }
 
@@ -52,10 +48,6 @@ enum class ColumnDataType {
 
             return FOREIGN_KEY
         }
-    }
-
-    override fun toString(): String {
-        return super.toString() + "(" + rawTypeName + ")"
     }
 }
 
@@ -83,6 +75,9 @@ data class ColumnConstraint(
 }
 
 data class Column(val name: String, var dataType: ColumnDataType, var constraints: ColumnConstraint, var annotations: List<Annotation>) {
+
+    var classDataType: String? = null
+
     fun getColumnDataType() : String {
         val baseType = getColumnDataTypeStr()
         val length = constraints.length

@@ -92,10 +92,8 @@ object KotlinEntityParser : EntityParser {
     private fun getTableColumnFromDeclaration(klassDecl: KlassDeclaration): Column? {
         val propertyIdentifier = klassDecl.identifier
 
-        logger.info { "Determine column raw type" }
         var rawTypeName = ""
         if (klassDecl.type.isEmpty()) {
-            logger.info { "Klass declaration type is empty" }
             if (klassDecl.children.size >= 2) {
                 val valueNode = klassDecl.children[1] as DefaultAstNode
                 if (valueNode.description != "literalConstant") {
@@ -106,13 +104,9 @@ object KotlinEntityParser : EntityParser {
             }
         } else {
             rawTypeName = klassDecl.type.first().identifier
-            logger.info { "Klass declaration type is not empty $rawTypeName" }
         }
 
         var columnDataType = ColumnDataType.getTypeByVmString(rawTypeName)
-        logger.info { "Type before assignment: ${columnDataType.rawTypeName}" }
-        columnDataType.rawTypeName = rawTypeName
-        logger.info { "Type after assignment: ${columnDataType.rawTypeName}" }
 
         if (propertyIdentifier != null) {
 
@@ -193,6 +187,10 @@ object KotlinEntityParser : EntityParser {
                         }
                     }
                 }
+            }
+
+            if (column != null) {
+                column.classDataType = rawTypeName
             }
 
             return column
