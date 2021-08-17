@@ -139,7 +139,6 @@ internal class MigrationGeneratorTest {
     fun `test migration generation for missing foreign keys`() {
         logger.info { "Start test 'test migration generation for missing foreign keys'" }
 
-        logger.info { "Klass declaration type is empty" }
         val migration = MigrationGenerator.generateNewMigration(
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-009/old",
             "src/test/resources/test-data/MigrationGeneratorTest/dataset-009/new"

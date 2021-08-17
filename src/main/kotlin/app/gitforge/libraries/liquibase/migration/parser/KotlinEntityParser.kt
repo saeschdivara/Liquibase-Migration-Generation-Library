@@ -106,7 +106,7 @@ object KotlinEntityParser : EntityParser {
             }
         } else {
             logger.info { "Klass declaration type is not empty ${klassDecl.type}" }
-            rawTypeName = klassDecl.type.first().rawName
+            rawTypeName = klassDecl.type.first().identifier
         }
 
         var columnDataType = ColumnDataType.getTypeByVmString(rawTypeName)
