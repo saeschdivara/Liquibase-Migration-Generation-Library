@@ -105,7 +105,7 @@ object KotlinEntityParser : EntityParser {
                 }
             }
         } else {
-            logger.info { "Klass declaration type is not empty ${klassDecl.type}" }
+            logger.info { "Klass declaration type is not empty ${klassDecl.type.first().identifier}" }
             rawTypeName = klassDecl.type.first().identifier
         }
 
