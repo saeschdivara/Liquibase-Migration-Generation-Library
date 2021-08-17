@@ -186,7 +186,7 @@ object MigrationGenerator {
 
                         if (referencedTable == null) {
                             logger.warn {
-                                "Could not find reference table, only the following exist in the new schema: ${newSchema.tables}"
+                                "Could not find reference table (${column}), only the following exist in the new schema: ${newSchema.tables}"
                             }
                         }
 
