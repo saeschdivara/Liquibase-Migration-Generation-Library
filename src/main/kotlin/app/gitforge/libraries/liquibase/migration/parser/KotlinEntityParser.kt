@@ -1,9 +1,6 @@
 package app.gitforge.libraries.liquibase.migration.parser
 
-import app.gitforge.libraries.liquibase.migration.schema.Column
-import app.gitforge.libraries.liquibase.migration.schema.ColumnConstraint
-import app.gitforge.libraries.liquibase.migration.schema.ColumnDataType
-import app.gitforge.libraries.liquibase.migration.schema.Table
+import app.gitforge.libraries.liquibase.migration.schema.*
 import kotlinx.ast.common.AstSource
 import kotlinx.ast.common.ast.DefaultAstNode
 import kotlinx.ast.common.ast.DefaultAstTerminal
@@ -16,6 +13,25 @@ object KotlinEntityParser : EntityParser {
 
     private val logger = KotlinLogging.logger {}
 
+    override fun getEmbeddedKeys(filePath: String): List<EmbeddedKey> {
+        val stringSource = AstSource.File(filePath)
+        val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(stringSource)
+
+        val embeddedKeys = ArrayList<EmbeddedKey>()
+        ast.summary(false).onSuccess { list ->
+            run {
+                for (klass in list.filterIsInstance(KlassDeclaration::class.java)) {
+                    if (getClassAnnotation(klass, name = "Embeddable") != null) {
+                        val columns = getTableColumns(klass)
+                        embeddedKeys.add(EmbeddedKey(className = klass.identifier?.rawName ?: "", columns = columns))
+                    }
+                }
+            }
+        }
+
+        return embeddedKeys
+    }
+
     override fun getTableFromEntityClass(filePath: String): Table? {
         val stringSource = AstSource.File(filePath)
         val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(stringSource)
@@ -23,7 +39,7 @@ object KotlinEntityParser : EntityParser {
         ast.summary(false).onSuccess { list ->
             run {
                 for (klass in list.filterIsInstance(KlassDeclaration::class.java)) {
-                    val tableAnnotation = getTableAnnotation(klass)
+                    val tableAnnotation = getClassAnnotation(klass, name = "Entity")
                     if (tableAnnotation != null) {
                         val tableName = getTableName(klass, tableAnnotation)
                         val columns = getTableColumns(klass)
@@ -38,8 +54,8 @@ object KotlinEntityParser : EntityParser {
         return table
     }
 
-    private fun getTableAnnotation(klass: KlassDeclaration): KlassAnnotation? {
-        return klass.annotations.find { annotation -> annotation.identifier.first().identifier == "Entity" }
+    private fun getClassAnnotation(klass: KlassDeclaration, name: String): KlassAnnotation? {
+        return klass.annotations.find { annotation -> annotation.identifier.first().identifier == name }
     }
 
     private fun getTableName(klass: KlassDeclaration, annotation: KlassAnnotation): String {

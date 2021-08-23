@@ -1,9 +1,6 @@
 package app.gitforge.libraries.liquibase.migration.parser
 
-import app.gitforge.libraries.liquibase.migration.schema.Column
-import app.gitforge.libraries.liquibase.migration.schema.ColumnConstraint
-import app.gitforge.libraries.liquibase.migration.schema.ColumnDataType
-import app.gitforge.libraries.liquibase.migration.schema.Table
+import app.gitforge.libraries.liquibase.migration.schema.*
 import com.github.javaparser.ast.body.FieldDeclaration
 import com.github.javaparser.ast.body.TypeDeclaration
 import com.github.javaparser.ast.expr.AnnotationExpr
@@ -13,6 +10,10 @@ import com.github.javaparser.utils.SourceRoot
 import java.nio.file.Path
 
 object JavaEntityParser : EntityParser {
+    override fun getEmbeddedKeys(filePath: String): List<EmbeddedKey> {
+        TODO("Not yet implemented")
+    }
+
     override fun getTableFromEntityClass(filePath: String): Table? {
         val splittedPath = filePath.split("/")
         val sourcePath = splittedPath.subList(0, splittedPath.size - 1)

@@ -102,3 +102,5 @@ data class Column(val name: String, var dataType: ColumnDataType, var constraint
         }
     }
 }
+
+data class EmbeddedKey(val className: String, val columns: List<Column>)

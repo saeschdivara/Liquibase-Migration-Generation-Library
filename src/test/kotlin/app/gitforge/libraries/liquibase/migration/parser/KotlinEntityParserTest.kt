@@ -9,6 +9,17 @@ internal class KotlinEntityParserTest {
     private val basePath = "src/test/resources/test-data/KotlinEntityParserTest"
 
     @Test
+    fun `Test parsing embedded class`() {
+        val embeddedKeys = KotlinEntityParser.getEmbeddedKeys("$basePath/UserAccountRelationship.kt")
+
+        assertEquals(1, embeddedKeys.size)
+        val key = embeddedKeys.first()
+
+        assertEquals("UserAccountRelationshipKey", key.className)
+        assertEquals(2, key.columns.size)
+    }
+
+    @Test
     fun `Test parsing entity with only primary key`() {
         val entity = KotlinEntityParser.getTableFromEntityClass("$basePath/SimpleBank.kt")
 
