@@ -12,7 +12,8 @@ enum class ColumnDataType {
     DOUBLE,
     DATE,
     DATETIME,
-    FOREIGN_KEY;
+    FOREIGN_KEY,
+    SYNTHETIC; // there are certain columns like composite keys
 
     companion object {
         fun getTypeByVmString(str: String): ColumnDataType {
@@ -99,6 +100,7 @@ data class Column(val name: String, var dataType: ColumnDataType, var constraint
             ColumnDataType.DATETIME ->  "datetime"
             ColumnDataType.DOUBLE -> "double"
             ColumnDataType.FOREIGN_KEY -> "foreign-key"
+            ColumnDataType.SYNTHETIC -> "synthetic"
         }
     }
 }

@@ -3,9 +3,10 @@ package app.gitforge.libraries.liquibase.migration.parser
 import app.gitforge.libraries.liquibase.migration.schema.EmbeddedKey
 import app.gitforge.libraries.liquibase.migration.schema.Table
 
+data class ParsingResult(var tables: List<Table> = ArrayList(), var embeddedKeys: List<EmbeddedKey> = ArrayList())
+
 interface EntityParser {
-    fun getEmbeddedKeys(filePath: String): List<EmbeddedKey>
-    fun getTableFromEntityClass(filePath: String): Table?
+    fun parse(filePath: String): ParsingResult
 
     fun getTableStyleName(klassName: String) : String {
         var tableName = ""

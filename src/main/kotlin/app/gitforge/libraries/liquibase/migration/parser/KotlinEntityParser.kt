@@ -13,45 +13,36 @@ object KotlinEntityParser : EntityParser {
 
     private val logger = KotlinLogging.logger {}
 
-    override fun getEmbeddedKeys(filePath: String): List<EmbeddedKey> {
-        val stringSource = AstSource.File(filePath)
-        val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(stringSource)
-
+    override fun parse(filePath: String): ParsingResult {
+        val tables = ArrayList<Table>()
         val embeddedKeys = ArrayList<EmbeddedKey>()
-        ast.summary(false).onSuccess { list ->
-            run {
-                for (klass in list.filterIsInstance(KlassDeclaration::class.java)) {
-                    if (getClassAnnotation(klass, name = "Embeddable") != null) {
-                        val columns = getTableColumns(klass)
-                        embeddedKeys.add(EmbeddedKey(className = klass.identifier?.rawName ?: "", columns = columns))
-                    }
-                }
-            }
-        }
 
-        return embeddedKeys
-    }
-
-    override fun getTableFromEntityClass(filePath: String): Table? {
         val stringSource = AstSource.File(filePath)
         val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(stringSource)
-        var table: Table? = null
         ast.summary(false).onSuccess { list ->
             run {
                 for (klass in list.filterIsInstance(KlassDeclaration::class.java)) {
+
+                    // check for table
                     val tableAnnotation = getClassAnnotation(klass, name = "Entity")
                     if (tableAnnotation != null) {
                         val tableName = getTableName(klass, tableAnnotation)
                         val columns = getTableColumns(klass)
 
-                        table = Table(tableName, klass.identifier?.rawName ?: "", columns)
-                        return@run
+                        tables.add(Table(tableName, klass.identifier?.rawName ?: "", columns))
+                    }
+
+                    // check for embedded keys
+                    if (getClassAnnotation(klass, name = "Embeddable") != null) {
+                        val columns = getTableColumns(klass)
+                        val embeddedKey = EmbeddedKey(className = klass.identifier?.rawName ?: "", columns = columns)
+                        embeddedKeys.add(embeddedKey)
                     }
                 }
             }
         }
 
-        return table
+        return ParsingResult(tables = tables, embeddedKeys = embeddedKeys)
     }
 
     private fun getClassAnnotation(klass: KlassDeclaration, name: String): KlassAnnotation? {
@@ -171,6 +162,11 @@ object KotlinEntityParser : EntityParser {
                     if (column == null) {
                         column = Column(columnName, columnDataType, ColumnConstraint(true), annotations)
                     }
+                }
+
+                if (annotationName == "EmbeddedId") {
+                    columnName = getTableStyleName(propertyIdentifier.rawName)
+                    column = Column(columnName, ColumnDataType.SYNTHETIC, ColumnConstraint(false, isPrimaryKey = true), annotations)
                 }
 
                 if (annotationName == "Enumerated") {

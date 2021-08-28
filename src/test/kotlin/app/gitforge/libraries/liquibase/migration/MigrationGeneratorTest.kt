@@ -218,5 +218,26 @@ internal class MigrationGeneratorTest {
         )
 
         assertEquals(4, migration.databaseChangeLog.size)
+        val changeLog = migration.databaseChangeLog.find {
+            val changes = it.changeSet.changes
+            if (changes.size != 2) {
+                false
+            } else {
+                val change = changes.first()
+                change.createTable != null
+            }
+        }
+
+        assertNotNull(changeLog)
+
+        val primaryKeyChange = changeLog!!.changeSet.changes[1]
+        assertNotNull(primaryKeyChange.addPrimaryKey)
+
+        val addPrimaryKey = primaryKeyChange.addPrimaryKey!!
+        val primaryKeyColumns = addPrimaryKey.columnNames.split(",")
+
+        assertEquals(2, primaryKeyColumns.size)
+        assertEquals("user_id", primaryKeyColumns[0])
+        assertEquals("account_id", primaryKeyColumns[1])
     }
 }

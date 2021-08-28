@@ -10,11 +10,7 @@ import com.github.javaparser.utils.SourceRoot
 import java.nio.file.Path
 
 object JavaEntityParser : EntityParser {
-    override fun getEmbeddedKeys(filePath: String): List<EmbeddedKey> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getTableFromEntityClass(filePath: String): Table? {
+    fun getTableFromEntityClass(filePath: String): Table? {
         val splittedPath = filePath.split("/")
         val sourcePath = splittedPath.subList(0, splittedPath.size - 1)
         val sources = SourceRoot(Path.of(sourcePath.joinToString("/")))
@@ -35,6 +31,10 @@ object JavaEntityParser : EntityParser {
         }
 
         return table
+    }
+
+    override fun parse(filePath: String): ParsingResult {
+        TODO("Not yet implemented")
     }
 
     private fun getTableName(klass: TypeDeclaration<*>, entityAnnotation: AnnotationExpr): String {

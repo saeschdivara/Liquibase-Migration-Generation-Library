@@ -10,7 +10,8 @@ internal class KotlinEntityParserTest {
 
     @Test
     fun `Test parsing embedded class`() {
-        val embeddedKeys = KotlinEntityParser.getEmbeddedKeys("$basePath/UserAccountRelationship.kt")
+        val parsingResult = KotlinEntityParser.parse("$basePath/UserAccountRelationship.kt")
+        val embeddedKeys = parsingResult.embeddedKeys
 
         assertEquals(1, embeddedKeys.size)
         val key = embeddedKeys.first()
@@ -21,11 +22,12 @@ internal class KotlinEntityParserTest {
 
     @Test
     fun `Test parsing entity with only primary key`() {
-        val entity = KotlinEntityParser.getTableFromEntityClass("$basePath/SimpleBank.kt")
+        val parsingResult = KotlinEntityParser.parse("$basePath/SimpleBank.kt")
+        val tables = parsingResult.tables
 
-        assertNotNull(entity)
+        assertEquals(1, tables.size)
 
-        val realEntity = entity!!
+        val realEntity = tables.first()
         assertEquals("simple_bank", realEntity.name)
         assertEquals(1, realEntity.columns.size)
 
@@ -38,11 +40,12 @@ internal class KotlinEntityParserTest {
 
     @Test
     fun `Test parsing entity with unique text field`() {
-        val entity = KotlinEntityParser.getTableFromEntityClass("$basePath/SimpleBank2.kt")
+        val parsingResult = KotlinEntityParser.parse("$basePath/SimpleBank2.kt")
+        val tables = parsingResult.tables
 
-        assertNotNull(entity)
+        assertEquals(1, tables.size)
 
-        val realEntity = entity!!
+        val realEntity = tables.first()
         assertEquals("simple_bank2", realEntity.name)
         assertEquals(2, realEntity.columns.size)
 
@@ -57,11 +60,12 @@ internal class KotlinEntityParserTest {
 
     @Test
     fun `Test parsing entity with foreign key`() {
-        val entity = KotlinEntityParser.getTableFromEntityClass("$basePath/BankAccount.kt")
+        val parsingResult = KotlinEntityParser.parse("$basePath/BankAccount.kt")
+        val tables = parsingResult.tables
 
-        assertNotNull(entity)
+        assertEquals(1, tables.size)
 
-        val realEntity = entity!!
+        val realEntity = tables.first()
         assertEquals("bank_account", realEntity.name)
         assertEquals(2, realEntity.columns.size)
 

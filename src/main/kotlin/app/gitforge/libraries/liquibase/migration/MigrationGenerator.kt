@@ -1,10 +1,8 @@
 package app.gitforge.libraries.liquibase.migration
 
 import app.gitforge.libraries.liquibase.migration.parser.KotlinEntityParser
+import app.gitforge.libraries.liquibase.migration.schema.*
 import app.gitforge.libraries.liquibase.migration.schema.Column
-import app.gitforge.libraries.liquibase.migration.schema.ColumnDataType
-import app.gitforge.libraries.liquibase.migration.schema.Schema
-import app.gitforge.libraries.liquibase.migration.schema.Table
 import app.gitforge.libraries.liquibase.migration.yml.*
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -63,15 +61,15 @@ object MigrationGenerator {
         }
 
         val tables = Collections.synchronizedList(ArrayList<Table>())
+        val compositeKeys = Collections.synchronizedList(ArrayList<EmbeddedKey>())
 
         runBlocking {
             File(newStatePath).walk().forEach {
                 if (it.isFile && it.name.endsWith(".kt")) {
                     launch {
-                        val table = KotlinEntityParser.getTableFromEntityClass(it.absolutePath)
-                        if (table != null) {
-                            tables.add(table)
-                        }
+                        val parsingResult = KotlinEntityParser.parse(it.absolutePath)
+                        tables.addAll(parsingResult.tables)
+                        compositeKeys.addAll(parsingResult.embeddedKeys)
                     }
                 }
             }
@@ -79,7 +77,7 @@ object MigrationGenerator {
 
         oldSchemaRun.join()
 
-        val newSchema = Schema(null, tables)
+        val newSchema = Schema(null, tables, compositeKeys)
 
         return@runBlocking calculateMigrations(oldSchemas.first(), newSchema)
     }
@@ -103,11 +101,16 @@ object MigrationGenerator {
             if (tableInOldSchema == null) {
                 val changes = ArrayList<Change>()
                 val foreignKeyChanges = ArrayList<Change>()
+                val compositeKeyChanges = ArrayList<Change>()
                 val columns = ArrayList<ChangeColumn>()
 
                 for (column in it.columns) {
                     val columnChange = ChangeColumn.fromSchema(column)
-                    columns.add(columnChange)
+
+                    // synthetic columns should never be added
+                    if (column.dataType != ColumnDataType.SYNTHETIC) {
+                        columns.add(columnChange)
+                    }
 
                     if (column.dataType == ColumnDataType.FOREIGN_KEY) {
                         val referencedTable = newSchema.getTableByClassName(column.classDataType ?: "")
@@ -123,9 +126,26 @@ object MigrationGenerator {
                         // currently, assuming that all referenced columns are longs
                         columnChange.column.type = "bigint";
                     }
+
+                    if (column.dataType == ColumnDataType.SYNTHETIC) {
+                        val compositeKey = newSchema.getCompositeKeyByName(column.classDataType ?: "")
+
+                        if (compositeKey != null) {
+                            val columnNames = compositeKey.columns.joinToString(separator = ",") { key -> key.name }
+                            compositeKeyChanges.add(Change(addPrimaryKey = AddPrimaryKeyChange(
+                                tableName,
+                                columnNames,
+                                "pk_${columnNames.replace(",", "_")}"
+                            )))
+                        }
+                    }
                 }
 
                 changes.add(Change(createTable = CreateTableChange(tableName, columns)))
+
+                if (compositeKeyChanges.isNotEmpty()) {
+                    changes.addAll(compositeKeyChanges)
+                }
 
                 changeLogs.add(DatabaseChangeLog(
                     ChangeSet(generateChangeSetId(), "auto-gen-lib", changes)
