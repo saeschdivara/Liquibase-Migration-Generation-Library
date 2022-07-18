@@ -1,0 +1,93 @@
+---
+databaseChangeLog:
+  - changeSet:
+      id: "2021-08-27T22:21:31.470242"
+      author: "auto-gen-lib"
+      changes:
+        - createTable:
+            tableName: "account"
+            columns:
+              - column:
+                  name: "id"
+                  type: "bigint"
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+  - changeSet:
+      id: "2021-08-27T22:21:31.470300"
+      author: "auto-gen-lib"
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: userPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: active
+                  type: BOOLEAN
+              - column:
+                  constraints:
+                    nullable: false
+                  name: email
+                  type: VARCHAR(40)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(40)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: password
+                  type: VARCHAR(80)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: username
+                  type: VARCHAR(20)
+            tableName: user
+  - changeSet:
+      id: "2021-08-27T22:21:31.470035"
+      author: "auto-gen-lib"
+      changes:
+        - createTable:
+            tableName: "user_account_relationship"
+            columns:
+              - column:
+                  name: "user_id"
+                  type: "bigint"
+                  autoIncrement: false
+                  constraints:
+                    nullable: true
+              - column:
+                  name: "account_id"
+                  type: "bigint"
+                  autoIncrement: false
+                  constraints:
+                    nullable: true
+        - addPrimaryKey:
+            tableName: "user_account_relationship"
+            columnNames: "user_id,account_id"
+            constraintName: "pk_user_id_account_id"
+  - changeSet:
+      id: "2021-08-27T22:21:31.47014"
+      author: "auto-gen-lib"
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: "user_account_relationship"
+            baseColumnNames: "user_id"
+            constraintName: "user_id_fk"
+            referencedTableName: "user"
+            referencedColumnNames: "id"
+        - addForeignKeyConstraint:
+            baseTableName: "user_account_relationship"
+            baseColumnNames: "account_id"
+            constraintName: "account_id_fk"
+            referencedTableName: "account"
+            referencedColumnNames: "id"

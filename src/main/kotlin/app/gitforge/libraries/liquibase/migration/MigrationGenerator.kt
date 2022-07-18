@@ -11,11 +11,13 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.io.path.Path
 
 
 object MigrationGenerator {
@@ -28,11 +30,12 @@ object MigrationGenerator {
         mapper
     }
 
-    fun dumpMigration(oldStatePath: String, newStatePath: String, migrationFilePath: String) {
+    fun dumpMigration(oldStatePath: String, newStatePath: String, migrationFilePath: String, migrationFileName: String) {
         val migrationResult = generateNewMigration(oldStatePath, newStatePath)
 
         if (migrationResult.databaseChangeLog.isNotEmpty()) {
-            File(migrationFilePath).writeText(mapper.writeValueAsString(migrationResult))
+            Files.createDirectories(Path(migrationFilePath))
+            File(migrationFilePath + migrationFileName).writeText(mapper.writeValueAsString(migrationResult))
         }
     }
 
@@ -199,7 +202,11 @@ object MigrationGenerator {
                     val columnChanges = ArrayList<ChangeColumn>()
                     columnChanges.add(ChangeColumn.fromSchema(column))
 
-                    changes.add(Change(addColumn = AddColumnChange(table.name, columnChanges)))
+                    if (column.dataType == ColumnDataType.SYNTHETIC) {
+                        // TODO: check if column / its subfields have changed
+                    } else {
+                        changes.add(Change(addColumn = AddColumnChange(table.name, columnChanges)))
+                    }
 
                     if (column.dataType == ColumnDataType.FOREIGN_KEY) {
                         val referencedTable = newSchema.getTableByClassName(column.classDataType ?: "")
