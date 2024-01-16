@@ -11,10 +11,14 @@ data class Column(val name: String, var type: String, val autoIncrement: Boolean
 data class ChangeColumn(val column: Column) {
     companion object {
         fun fromSchema(column: SchemaColumn) : ChangeColumn {
-
             val columnConstraint = column.constraints
+            var isPrimaryKey: Boolean? = null
+            if (columnConstraint.isPrimaryKey != null && columnConstraint.isPrimaryKey!!) {
+                isPrimaryKey = true
+            }
+
             val constraint = ColumnConstraint(
-                columnConstraint.isPrimaryKey,
+                isPrimaryKey,
                 null,
                 columnConstraint.nullable,
                 columnConstraint.isUnique
@@ -23,7 +27,7 @@ data class ChangeColumn(val column: Column) {
             return ChangeColumn(Column(
                 column.name,
                 column.getColumnDataType(),
-                false,
+                null,
                 constraint
             ))
         }
