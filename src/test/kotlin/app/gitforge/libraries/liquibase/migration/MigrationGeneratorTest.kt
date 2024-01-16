@@ -183,6 +183,7 @@ internal class MigrationGeneratorTest {
         val providerColumn = createTable.columns[6].column
         assertEquals("provider", providerColumn.name)
         assertEquals("varchar", providerColumn.type)
+        assertNull(providerColumn.autoIncrement)
     }
 
     @Test
