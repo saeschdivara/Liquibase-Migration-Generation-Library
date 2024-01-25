@@ -103,10 +103,10 @@ object KotlinEntityParser : EntityParser {
         if (klassDecl.type.isEmpty()) {
             if (klassDecl.children.size >= 2) {
                 val valueNode = klassDecl.children[1] as DefaultAstNode
-                if (valueNode.description != "literalConstant") {
-                    TODO("Throw appropriate exception here")
-                } else {
+                if (valueNode.description == "literalConstant") {
                     rawTypeName = valueNode.children.first().description
+                } else {
+                    TODO("Throw appropriate exception here")
                 }
             }
         } else {
@@ -198,6 +198,10 @@ object KotlinEntityParser : EntityParser {
                             TODO("Resolve parameter for enumerated annotation")
                         }
                     }
+                }
+
+                if (annotationName == "ManyToMany") {
+                    TODO("Implement ManyToMany")
                 }
             }
 

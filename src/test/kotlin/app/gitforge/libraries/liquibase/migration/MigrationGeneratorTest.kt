@@ -242,7 +242,6 @@ internal class MigrationGeneratorTest {
         assertEquals("account_id", primaryKeyColumns[1])
     }
 
-
     @Test
     fun `test migration with embedded key but no changes`() {
         val migration = MigrationGenerator.generateNewMigration(
@@ -252,4 +251,14 @@ internal class MigrationGeneratorTest {
 
         assertEquals(0, migration.databaseChangeLog.size)
     }
+
+//    @Test
+//    fun `test migration ManyToMany annotations with both tables`() {
+//        val migration = MigrationGenerator.generateNewMigration(
+//            "src/test/resources/test-data/MigrationGeneratorTest/dataset-012/old",
+//            "src/test/resources/test-data/MigrationGeneratorTest/dataset-012/new"
+//        )
+//
+//        assertEquals(3, migration.databaseChangeLog.size)
+//    }
 }
