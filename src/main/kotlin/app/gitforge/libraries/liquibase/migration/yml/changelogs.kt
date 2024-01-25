@@ -6,7 +6,7 @@ import app.gitforge.libraries.liquibase.migration.schema.Column as SchemaColumn
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ColumnConstraint(val primaryKey: Boolean?, val primaryKeyName: String?, val nullable: Boolean?, val unique: Boolean?)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class Column(val name: String, var type: String, val autoIncrement: Boolean?, val constraints: ColumnConstraint?)
+data class Column(val name: String, var type: String, val autoIncrement: Boolean?, val constraints: ColumnConstraint?, val defaultValue: Any?)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ChangeColumn(val column: Column) {
     companion object {
@@ -28,7 +28,8 @@ data class ChangeColumn(val column: Column) {
                 column.name,
                 column.getColumnDataType(),
                 null,
-                constraint
+                constraint,
+                defaultValue = column.defaultValue
             ))
         }
     }

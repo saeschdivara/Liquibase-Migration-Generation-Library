@@ -107,7 +107,8 @@ object JavaEntityParser : EntityParser {
                 getColumnName(it),
                 ColumnDataType.getTypeByVmString(typeName),
                 columnConstraint,
-                annotations
+                annotations,
+                defaultValue = null // TODO: support default value parsing
             )
         } as MutableList<Column>
     }

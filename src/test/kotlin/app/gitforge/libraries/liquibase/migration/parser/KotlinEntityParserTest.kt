@@ -39,6 +39,27 @@ internal class KotlinEntityParserTest {
     }
 
     @Test
+    fun `Test parsing entity with a column with a default value`() {
+        val parsingResult = KotlinEntityParser.parse("$basePath/SimpleBank3.kt")
+        val tables = parsingResult.tables
+
+        assertEquals(1, tables.size)
+
+        val realEntity = tables.first()
+        assertEquals("simple_bank3", realEntity.name)
+        assertEquals(2, realEntity.columns.size)
+
+        val primaryKey = realEntity.columns.first()
+        assertEquals("total", primaryKey.name)
+        assertEquals(ColumnDataType.LONG, primaryKey.dataType)
+        assertEquals(false, primaryKey.constraints.nullable)
+        assertEquals(false, primaryKey.constraints.isPrimaryKey)
+
+        assertNotNull(primaryKey.defaultValue)
+        assertEquals(10L, primaryKey.defaultValue)
+    }
+
+    @Test
     fun `Test parsing entity with unique text field`() {
         val parsingResult = KotlinEntityParser.parse("$basePath/SimpleBank2.kt")
         val tables = parsingResult.tables

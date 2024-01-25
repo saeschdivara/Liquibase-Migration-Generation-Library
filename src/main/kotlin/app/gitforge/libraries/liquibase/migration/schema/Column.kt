@@ -75,7 +75,7 @@ data class ColumnConstraint(
     }
 }
 
-data class Column(val name: String, var dataType: ColumnDataType, var constraints: ColumnConstraint, var annotations: List<Annotation>) {
+data class Column(val name: String, var dataType: ColumnDataType, var constraints: ColumnConstraint, var annotations: List<Annotation>, var defaultValue: Any?) {
 
     var classDataType: String? = null
 

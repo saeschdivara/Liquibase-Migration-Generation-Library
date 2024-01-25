@@ -119,8 +119,27 @@ object KotlinEntityParser : EntityParser {
 
             var column: Column? = null
             var columnName: String?
+            var defaultValue: Any? = null
 
             val annotations = klassDecl.annotations.map { getAnnotation(it) }
+
+            if (klassDecl.expressions.isNotEmpty()) {
+                val expr = klassDecl.expressions.first()
+                if (expr is DefaultAstNode) {
+                    if (expr.description == "literalConstant") {
+                        val valueNode = expr.children.first() as DefaultAstTerminal
+                        when (valueNode.description) {
+                            "IntegerLiteral" -> {
+                                defaultValue = valueNode.text.toLong()
+                            }
+                            "NullLiteral" -> {
+                                defaultValue = null
+                            }
+                            else -> { TODO("MISSING SUPPORT FOR OTHER DEFAULT VALUES") }
+                        }
+                    }
+                }
+            }
 
             for (parameterAnnotation in klassDecl.annotations) {
                 val parsedAnnotation = getAnnotation(parameterAnnotation)
@@ -147,7 +166,7 @@ object KotlinEntityParser : EntityParser {
 
                     val constraints = ColumnConstraint(nullable, isId, unique, stringLength)
                     if (column == null) {
-                        column = Column(columnName, columnDataType, constraints, annotations)
+                        column = Column(columnName, columnDataType, constraints, annotations, defaultValue = defaultValue)
                     } else {
                         TODO("Implement case when column is not the first column creating annotation")
                     }
@@ -160,13 +179,13 @@ object KotlinEntityParser : EntityParser {
                         ?: getTableStyleName(propertyIdentifier.rawName)
 
                     if (column == null) {
-                        column = Column(columnName, columnDataType, ColumnConstraint(true), annotations)
+                        column = Column(columnName, columnDataType, ColumnConstraint(true), annotations, defaultValue = defaultValue)
                     }
                 }
 
                 if (annotationName == "EmbeddedId") {
                     columnName = getTableStyleName(propertyIdentifier.rawName)
-                    column = Column(columnName, ColumnDataType.SYNTHETIC, ColumnConstraint(false, isPrimaryKey = true), annotations)
+                    column = Column(columnName, ColumnDataType.SYNTHETIC, ColumnConstraint(false, isPrimaryKey = true), annotations, defaultValue = defaultValue)
                 }
 
                 if (annotationName == "Enumerated") {
@@ -181,7 +200,7 @@ object KotlinEntityParser : EntityParser {
                             val enumTypeValue = enumType.children.first() as DefaultAstTerminal
                             columnDataType = ColumnDataType.getTypeByVmString(enumTypeValue.text)
                             columnName = getTableStyleName(propertyIdentifier.rawName)
-                            column = Column(columnName, columnDataType, ColumnConstraint(true), annotations)
+                            column = Column(columnName, columnDataType, ColumnConstraint(true), annotations, defaultValue = defaultValue)
                         } else {
                             TODO("Resolve parameter for enumerated annotation")
                         }

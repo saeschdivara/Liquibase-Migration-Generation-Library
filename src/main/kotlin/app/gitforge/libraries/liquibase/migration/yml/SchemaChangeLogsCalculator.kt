@@ -54,7 +54,8 @@ class SchemaChangeLogsCalculator(val schema: Schema) {
                 columnData.name,
                 ColumnDataType.getTypeByMigrationString(columnData.type),
                 ColumnConstraint.fromYaml(columnData.constraints),
-                annotations = ArrayList()
+                annotations = ArrayList(),
+                defaultValue = columnData.defaultValue,
             )
 
             if (columnData.type.contains("(")) {
