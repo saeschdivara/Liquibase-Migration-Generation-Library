@@ -132,6 +132,9 @@ object KotlinEntityParser : EntityParser {
                             "IntegerLiteral" -> {
                                 defaultValue = valueNode.text
                             }
+                            "BooleanLiteral" -> {
+                                defaultValue = valueNode.text
+                            }
                             "NullLiteral" -> {
                                 defaultValue = null
                             }

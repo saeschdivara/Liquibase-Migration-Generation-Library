@@ -56,7 +56,7 @@ internal class KotlinEntityParserTest {
         assertEquals(false, primaryKey.constraints.isPrimaryKey)
 
         assertNotNull(primaryKey.defaultValue)
-        assertEquals(10L, primaryKey.defaultValue)
+        assertEquals("10", primaryKey.defaultValue)
     }
 
     @Test
