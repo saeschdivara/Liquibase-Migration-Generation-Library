@@ -130,7 +130,7 @@ object KotlinEntityParser : EntityParser {
                         val valueNode = expr.children.first() as DefaultAstTerminal
                         when (valueNode.description) {
                             "IntegerLiteral" -> {
-                                defaultValue = valueNode.text.toLong()
+                                defaultValue = valueNode.text
                             }
                             "NullLiteral" -> {
                                 defaultValue = null
